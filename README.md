@@ -12,7 +12,7 @@ PyQt5==5.15.10
 ```
 Install the dependencies with `pip install -r requiriments.txt` and start the program with `python start.py` ↓ 
 ```
-pip install -r requiriments.txt
+pip install -r requirements.txt
 python start.py
 ```
 ### :rotating_light: Known Linux Problems :rotating_light:
