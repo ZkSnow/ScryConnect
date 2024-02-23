@@ -5,23 +5,36 @@ ScryConnet is an interface made with `PyQt5` for the screen mirroring program `S
 Make sure you have `Scrcpy` and `ADB` installed correctly before continuing
 [Scrcpy Repository](https://github.com/Genymobile/scrcpy).
 
+first, clone the repository or simply download it ↓
+```
+git clone https://github.com/ZkSnow/ScryConnect.git
+```
+
+the following modules are required for the UI to work ↓
 ```
 python 3.10 or newer
 psutil==5.9.6
 PyQt5==5.15.10
 ```
-Install the dependencies with `pip install -r requiriments.txt` and start the program with `python start.py` ↓ 
+
+If you are using windows you will have to install `windows-curses` to run this ↓
+```
+pip install windows-curses
+```
+
+Install the dependencies with `pip install -r requirements.txt` and start the program with `python start.py` ↓ 
 ```
 pip install -r requirements.txt
 python start.py
 ```
+
 ### :rotating_light: Known Linux Problems :rotating_light:
 
 When using ScryConnect on Linux, you may encounter the following known issues:
 
 ### 1.  **Ignoring XDG_SESSION_TYPE=wayland in Gnome:**
    If you are using the Gnome desktop environment, you may encounter a warning similar to this one
-   To fix this, you can install the `libxcb-xinerama0` package by running the following command:
+   To fix this, you can install the  `libxcb-xinerama0` package by running the following command:
 `sudo apt-get install libxcb-xinerama0`
 
 ### 2. **Python error: source code cannot contain null bytes:**
