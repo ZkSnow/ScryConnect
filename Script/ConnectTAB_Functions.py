@@ -173,15 +173,16 @@ class ConnectTAB():
                 "No ip Selected",
             )   
 
-    def disconnect_device(self, buttons: list, path: str) -> None:
+    def disconnect_device(self, buttons: list, data: dict) -> None:
         """
         This function `disconnects` the device with `DisconnectUI`.
         
         Parameters
         ----------
         - buttons (`list`): A list of non-concurrent buttons to toggle.
-        - path (`str`): The path of the selected version.
+        - data (`dict`): The dictionary containing the userdata.
         """
+        path = data["Versions"]["Selected_Version"]["Path"]
         if path or not running_on_windows:
             if verify_scrcpy_path(path):
                 original_text = toggle_button_state(
