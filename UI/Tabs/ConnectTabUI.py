@@ -159,7 +159,7 @@ class ConnectTab(QWidget):
             "clicked",
             connect_tab_instance.disconnect_device,
             self.non_concurrent_buttons,
-            self.userdata["Versions"]["Selected_Version"]["Path"],
+            self.userdata,
         )
 
         find_devices_instance = DeviceList()
