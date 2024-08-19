@@ -41,21 +41,26 @@ class StartTab(QWidget):
             "Initial Orientation",
             "Vertical Orientation",
             "Upside Down",
-            "Horizontal Left", 
+            "Horizontal Left",
             "Horizontal Right",
-            ]
-        otg_mode = [
+        ]
+        otg_type = [
             "OFF",
-            "Mouse", 
-            "Keyboard", 
-            "Mouse + Keyboard"
-            ]
+            "SDK",
+            "AoA",
+            "uHid",
+        ]
+        otg_mode = [
+            "Mouse",
+            "Keyboard",
+            "Mouse + Keyboard",
+        ]
         file_types = [
             "mp4",
             "mkv",
             "aac",
             "opus",
-            ]
+        ]
         video_sources = [
             "Screen",
             "Back Camera",
@@ -80,14 +85,15 @@ class StartTab(QWidget):
         self.label_video_source = Create.Label("Video Source", self)
         self.label_audio_source = Create.Label("Audio Source", self)
         self.label_time_limit = Create.Label("Record Time Limit", self)
-        self.label_OTG = Create.Label("OTG", self)
+        self.label_keyboard_mouse = Create.Label("Keyboard & Mouse", self)
 
         self.combox_presets = Create.Combox(config_templates, self, (145, 22), index_combo[0])
         self.combox_record_file_type = Create.Combox(file_types, self, (51, 22), index_combo[1])
         self.combox_orientation_config = Create.Combox(orientations, self, (191, 22), index_combo[2])
         self.combox_video_source = Create.Combox(video_sources, self, (191, 22), index_combo[3])
         self.combox_audio_source = Create.Combox(audio_sources, self, (191, 22), index_combo[4])
-        self.combox_OTG = Create.Combox(otg_mode, self, (191, 22), index_combo[5])
+        self.combox_OTG_type = Create.Combox(otg_type, self, (191, 22), index_combo[5])
+        self.combox_OTG_mode = Create.Combox(otg_mode, self, (191, 22), index_combo[6])
         
         self.text_custom_start = Create.LineEdit("Custom Config... *JUST ARGS*", self, (301, 20), last_texts[0])
         self.text_record_file_name = Create.LineEdit("File Name...", self, (111, 20), last_texts[1], r"\S+")
@@ -188,8 +194,9 @@ class StartTab(QWidget):
             self.combox_video_source,
             self.label_audio_source,
             self.combox_audio_source,
-            self.label_OTG,
-            self.combox_OTG,
+            self.label_keyboard_mouse,
+            self.combox_OTG_type,
+            self.combox_OTG_mode,
             self.label_time_limit,
             self.line_time_limit,
             self.slider_time_limit,
