@@ -2,7 +2,6 @@ from posixpath import splitext
 from shutil import move
 from os import rename, listdir
 from os.path import join
-from sys import version 
 
 from PyQt5.QtWidgets import QComboBox, QGridLayout
 
@@ -39,11 +38,10 @@ def get_sliders_start(sliders: list, active_checks: list, scrcpy_version: float)
         
         if "audio buffer" in active_checks and index == 4 and scrcpy_version >= 2.0:
             args_line += f" --audio-buffer {slider.value()}"
-
+            
         if "time limit" in active_checks and index == 5 and scrcpy_version >= 2.1:
             args_line += f" --time-limit {slider.value()}"
-            
-        
+    
     return args_line
 
 def get_line_edit_start(line_edits: list, active_checks: list, record_combox: QComboBox, scrcpy_version: float) -> str:
@@ -57,27 +55,26 @@ def get_line_edit_start(line_edits: list, active_checks: list, record_combox: QC
     - record_combox (`QComboBox`): A QComboBox object for the record file name.
     - scrcpy_version (`float`): The scrcpy version.
     
-    Returns:
+    Returns
+    -------
     - str: arg_line of the `lineEdits`.
     """
     args_line = ""
     for index, lineedit in enumerate(line_edits):
-            if "crop" in active_checks and index == 1:
-                args_line += f" --crop {lineedit.text()}"
-                
-            if "record" in active_checks and index == 0:
-                file_name = lineedit.text() or "video"
-                extension_file = record_combox.currentText()
-                extension_file = "mp4" if extension_file in ["opus", "aac"] \
-                    and scrcpy_version < 2.1 else extension_file
-                
-                if extension_file  in ["opus", "aac"] and scrcpy_version >= 2.1:
-                    args_line += f" --audio-codec={extension_file}"
-                
-                args_line += f" --record {file_name}.{extension_file}"
-                        
-    return args_line
+        if "record" in active_checks and index == 0:
+            extension_file = record_combox.currentText()
+            extension_file = "mp4" if extension_file in ["opus", "aac"] \
+                and scrcpy_version < 2.1 else extension_file
+
+            if extension_file  in ["opus", "aac"] and scrcpy_version >= 2.1:
+                args_line += f" --audio-codec={extension_file}"
+            args_line += f" --record {lineedit.text() or "video"}.{extension_file}"
             
+        if "crop" in active_checks and index == 1:
+            args_line += f" --crop {lineedit.text()}"
+    
+    return args_line
+
 def get_combo_box_start(combo_boxs: list, scrcpy_version: float) -> str:
     """
     Generate arg_line of the `comboBoxs` selections.
@@ -85,28 +82,34 @@ def get_combo_box_start(combo_boxs: list, scrcpy_version: float) -> str:
     Parameters
     ----------
     - combo_boxs (`List[QComboBox]`): A list of QComboBox objects.
-
+    - scrcpy_version (float): The scrcpy version.
+    
     Returns:
     - str: arg_line of the `comboboxs`.
     """
     args_line = ""
     combo_boxs_texts = [combo_box.currentText() for combo_box in combo_boxs[1:]]
+    key_mouse = " ".join(combo_boxs_texts[-2:])
+
     for dict_name in EXTRA_ARGS_LIST:
         version_dict = EXTRA_ARGS_LIST[dict_name]
         if dict_name == "all_version":
-            args_line += "".join(version_dict[combo_text] for combo_text in combo_boxs_texts \
-                if combo_text in version_dict.keys())
-            
+            args_line += "".join(
+                version_dict.get(combo_text, "") for combo_text in combo_boxs_texts
+            )
+            args_line += "".join(
+                version_dict.get(key_mouse, "")
+            )
         elif dict_name == "deprecated_args":
             for limits in version_dict.keys():
                 if scrcpy_version <= (limit_dict := version_dict[limits])["Version"]:
-                    args_line = "".join(limit_dict[combo_text] for combo_text in combo_boxs_texts \
-                        if combo_text in limit_dict.keys())
-        
+                    args_line = "".join(
+                        limit_dict.get(combo_text, "") for combo_text in combo_boxs_texts 
+                    )
         elif scrcpy_version >= version_dict["Version"]:
-            args_line += "".join(version_dict[combo_text] for combo_text in combo_boxs_texts \
-                if combo_text in version_dict.keys())
-                
+            args_line += "".join(
+                version_dict.get(combo_text, "") for combo_text in combo_boxs_texts
+            )
     return args_line
 
 def get_checkBox_start(active_checks: list, args_w_required_values: list, scrcpy_version: float) -> tuple:
@@ -116,7 +119,8 @@ def get_checkBox_start(active_checks: list, args_w_required_values: list, scrcpy
     Parameters
     ----------
     - active_checks (`list`): A list of active checks.
-    - require_values (`list`): A list of values that are required.
+    - args_w_required_values (`list`): A list of arg names that requires a value.
+    - scrcpy_version (float): The scrcpy version.
 
     Returns
     -------
@@ -127,15 +131,15 @@ def get_checkBox_start(active_checks: list, args_w_required_values: list, scrcpy
     for dict_name in ARGS_LIST.keys():
         version_dict = ARGS_LIST[dict_name]
         if dict_name == "all_version":
-            args_line += "".join(version_dict[active_check] for active_check in active_checks \
-                if active_check in version_dict.keys())
+            args_line += "".join(
+                version_dict.get(active_check, "") for active_check in active_checks
+            )
         else:
             if scrcpy_version >= version_dict["Version"]:
-                args_line += "".join(version_dict[active_check] for active_check in active_checks \
-                    if active_check in version_dict.keys())
-
-    hide_client = any("hide client" in check for check in active_checks)   
-    return args_line, hide_client
+                args_line += "".join(
+                    version_dict.get(active_check, "") for active_check in active_checks
+                )
+    return args_line, "hide client" in active_checks 
     
 #move saved video from --record (-r)
 def move_record_file(record_file: str, path: str, target_path: str, custom_dir_enabled: bool) -> None:
@@ -148,6 +152,10 @@ def move_record_file(record_file: str, path: str, target_path: str, custom_dir_e
     - path (`str`): The path where the saved video file is located.
     - target_path (`str`): The path where the saved video file will be moved.
     - custom_dir_enabled (`bool`): Whether the custom directory is enabled.
+    
+    Returns
+    -------
+    - `None`
     """
     if record_file:
         if custom_dir_enabled:
@@ -164,14 +172,13 @@ def move_record_file(record_file: str, path: str, target_path: str, custom_dir_e
                         break
                     else:
                         index += 1
-                    
                 move(old_path, target_path)
 
             except (FileNotFoundError, TypeError):
                 create_alert(
                     "Directory Not Found",
                     ("The target path was not found, make sure it is correct\n"
-                    "the file was left in the initial folder"),
+                    "the file was left in the scrcpy folder"),
                 )
             else:
                 create_alert(
@@ -205,7 +212,6 @@ def arguments_errors(err_out: list) -> bool:
             ("You provided an invalid arg, check that the arg used is\n" 
             "compatible with the version of scrcpy used, and try again"),
         )
-        
     elif any(error in err_out for error in ERRORS_LIST["value_error"]):
         create_alert(
             "Values Error",
@@ -213,7 +219,6 @@ def arguments_errors(err_out: list) -> bool:
             "provided or invalid values were provided\n"
             "\t\t Check the commands (like --crop) and try again.")
         )
-    
     elif "nothing to do" in err_out:
         create_alert(
             "Values Error",
@@ -221,14 +226,13 @@ def arguments_errors(err_out: list) -> bool:
             "in other words nothing to do\ncheck everything "
             "is correct and try again"),
         )
-        
     elif "no format specified" in err_out:
         create_alert(
             "Nothing To Do",
             ("The format chosen for '--record' is not valid or "
             "has not been set\nchoose a valid one (.mp4 | .mkv) "
             "and try again"),
-            )
+        )
     elif "only work in otg mode" in err_out:
         create_alert(
             "OTG Arg",
@@ -247,13 +251,11 @@ def arguments_errors(err_out: list) -> bool:
             "Camera Options",
             "Camera options are only available with --video-source=camera",
         )
-    
     elif "could not specify both --camera-size and -m/--max-size" in err_out:
         create_alert(
             "Camera Size",
             "Cannot specify --camera-size and -m/--max-size at the same time.",
         )
-    
     elif "could not specify both --camera-id and --camera-facing" in err_out:
         create_alert(
             "Camera ID",
@@ -270,9 +272,8 @@ def arguments_errors(err_out: list) -> bool:
             "Otg Mode Disabled",
             "OTG mode (--otg) has been disabled, to fix this problem try updating the version of scrcpy" 
         )
-    else:
+    else: 
         error_detect = False
-    
     print(err_out)
     return error_detect
     
@@ -331,10 +332,20 @@ def device_errors(err_out: list) -> bool:
             "No Control",
             "Cannot use turn screen off without device control.",
         )
- 
-    else:
+    elif "unauthorized" in err_out:
+        create_alert(
+            "Unauthorized",
+            ("The device has not yet authorized this computer\n"
+             "to establish an adb connection."),
+        )
+    elif "no matching camera found" in err_out:
+        create_alert(
+            "No Camera Was Found",
+            "Make sure the camera is properly connected.",
+        )
+    else: 
         error_detect = False
-    
+    print(err_out)
     return error_detect
 
 def args_combination_errors(err_out: list) -> bool:
@@ -368,9 +379,9 @@ def args_combination_errors(err_out: list) -> bool:
             ("The args '--stay-awake' and '--no-control' are not compatible\n" 
             "remove one of them and try again"),
         )
-    else:
+    else: 
         error_detect = False
-    
+    print(err_out)
     return error_detect
 
 #Errors for connection
@@ -427,9 +438,15 @@ def connection_errors(emit_tcpip: str, emit_connect: str) -> bool:
             "Bad Port",
             "One poorly chosen door, please choose another",
         )
+    elif "server connection failed" in emit_connect:
+        create_alert(
+            "Connection Failed",
+            ("The connection was refused by the destination device,\n"
+             "or the device is offline")
+        )
     else:
         error_detect = False
-    
+    print(f"connect: {emit_connect}\n tcpip: {emit_tcpip}")
     return error_detect
         
 def assemble_grid_layout(tab_name: str, locate: str, *elements: tuple) -> QGridLayout:
@@ -456,27 +473,34 @@ def assemble_grid_layout(tab_name: str, locate: str, *elements: tuple) -> QGridL
     """
     tab_name = tab_name.lower().rstrip().lstrip()
     if tab_name not in ["connect_tab", "start_tab", "config_tab"]:
-        raise ValueError("The tab name is not valid. Please use "
-                         "'connect_tab', 'start_tab', or 'config_tab'.")
+        raise ValueError(
+            "The tab name is not valid. Please use "
+            "'connect_tab', 'start_tab', or 'config_tab'."
+        )
     
     locate =  locate.lower().rstrip().lstrip()
     if locate not in ["upper", "middle", "lower"]:
-        raise ValueError("The location is not valid. Please use " 
-                         "'upper', 'middle', or 'lower'.")
+        raise ValueError(
+            "The location is not valid. Please use " 
+            "'upper', 'middle', or 'lower'."
+        )
     try:
         positions = LAYOUT_POSITIONS[tab_name][locate]
     except KeyError:
-        raise KeyError("Check that the keys are valid and that the "
-                        "chosen location is valid for the tab.")
+        raise KeyError(
+            "Check that the keys are valid and that the "
+            "chosen location is valid for the tab."
+        )
     else:
         if len(positions) != len(elements):
-            raise ValueError("The number of elements does not match the number of positions. "
-                             f"pos: {len(positions)} elms: {len(elements)}")
-    
+            raise ValueError(
+                "The number of elements does not match the number of positions. "
+                f"pos: {len(positions)} elms: {len(elements)}"
+            )
         return add_widget_set(list(elements), positions)
 
 #takes the data needed for the UI to work correctly
-def get_datas_for_ui(data, data_for: str) -> tuple:
+def get_datas_for_ui(data: dict, data_for: str) -> tuple:
     """
     This function takes the data needed for the `UI` to work correctly.
     
@@ -530,5 +554,6 @@ def get_datas_for_ui(data, data_for: str) -> tuple:
         return selected_version, versions, resolution, path_mode,\
                last_path_file, directory_name, combox_index
     else:
-        raise ValueError("Please choose a value from these: ['connect', 'start', 'config']")
-        
+        raise ValueError(
+            "Please choose a value from these: ['connect', 'start', 'config']"
+        )
