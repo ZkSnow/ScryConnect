@@ -2,16 +2,21 @@ from functools import partial
 from psutil import process_iter
 from os.path import join
 
-
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt  
-from PyQt5.QtWidgets import (QScrollArea, QGridLayout, QVBoxLayout, 
-                             QWidget, QLabel, QGroupBox, QDialog)
-
+from PyQt5.QtWidgets import (
+    QScrollArea,
+    QGridLayout,
+    QVBoxLayout,
+    QWidget,
+    QLabel,
+    QGroupBox,
+    QDialog,
+)
 
 from Theme.icon_scrcpy import * 
 import Script.Utilities.Create_Elements as Create
-from Script.Utilities.Utils import connect_signal #! inclementar en el futuro
+from Script.Utilities.Utils import connect_signal
 from Script.Utilities.Utils import toggle_button_state
 from Script.Thread_Connect_Tab import ConnectTAB_Thread
 from Script.Thread_Start_Tab import StartTAB_Thread
@@ -52,7 +57,10 @@ class DeviceSelectionUI(QDialog):
                 
         self.ui_type = self.ui_type.lower().title().rstrip().lstrip()
         if self.ui_type not in ["Disconnect Device", "Start Device", "Device Resolution", "Open Shell"]:
-            raise ValueError("Invalid UI type, must be one of the following: 'Disconnect Device', 'Start Device', 'Device Resolution', 'Open Shell'")
+            raise ValueError(
+                "Invalid UI type, must be one of the following: "
+                "'Disconnect Device', 'Start Device', 'Device Resolution', 'Open Shell'"
+            )
         
         self.setWindowTitle(self.ui_type)
         self.layout_content = QVBoxLayout()
@@ -120,38 +128,39 @@ class DeviceSelectionUI(QDialog):
         - *def_arg (`list`): The arguments to pass to the function.
         """
         if self.ui_type == "Device Resolution":
-            button.clicked.connect(
-                partial(
-                    self.charge_device_res,
-                    def_arg[0],
-                )
+            connect_signal(
+                button,
+                "clicked",
+                self.charge_device_res,
+                def_arg[0],
             )
+            
         elif self.ui_type == "Disconnect Device":
-            button.clicked.connect(
-                partial(
-                    self.disconnect,
-                    def_arg[0],
-                    def_arg[1],
-                )
+            connect_signal(
+                button,
+                "clicked",
+                self.disconnect,
+                def_arg[0],
+                def_arg[1],
             )
         elif self.ui_type == "Start Device": 
-            button.clicked.connect(
-                partial(
-                    self.start_device,
-                    def_arg[0],
-                    def_arg[1],
-                )
+            connect_signal(
+                button,
+                "clicked",
+                self.start_device,
+                def_arg[0],
+                def_arg[1],
             )
         else:
-            button.clicked.connect(
-                partial(
-                    self.open_device_shell,
-                    def_arg[0],
-                    def_arg[1],
-                )
+            connect_signal(
+                button,
+                "clicked",
+                self.open_device_shell,
+                def_arg[0],
+                def_arg[1],
             )
 
-    def charge_device_res(self, device: str) -> None:
+    def charge_device_res(self, device_name: str) -> None:
         """
         This function starts thread that will charge the resolution of the chosen device.
         
@@ -173,7 +182,7 @@ class DeviceSelectionUI(QDialog):
             self.terminal = ConfigTAB_Thread(
                 "charge_device_resolution",
                 self.path,
-                device,
+                device_name,
                 resolution,
             )
             self.terminal.start()
@@ -183,7 +192,7 @@ class DeviceSelectionUI(QDialog):
                 )
             )
     
-    def disconnect(self, device: str, device_board: QGroupBox) -> None:
+    def disconnect(self, device_name: str, device_board: QGroupBox) -> None:
         """
         This function starts thread that will disconnect the `scrcpy` of the chosen device.
         
@@ -200,7 +209,7 @@ class DeviceSelectionUI(QDialog):
             self.terminal = ConnectTAB_Thread(
                 "disconnect_device",
                 self.path,
-                device,
+                device_name,
                 device_board,
             )
             self.terminal.start()
