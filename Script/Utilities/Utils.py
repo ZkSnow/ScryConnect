@@ -65,8 +65,9 @@ def connect_signal(element: any, conn_type: str, method: Callable, *args: tuple)
         "activated",
     ]
     if conn_type not in valid_conn_types:
-        raise ValueError(f"Invalid connection type: '{conn_type}'. " 
-                         f"Valid types: '{valid_conn_types}'")
+        raise ValueError(
+            f"Invalid connection type: '{conn_type}'. Valid types: '{valid_conn_types}'"
+        )
     
     if conn_type in valid_conn_types:
         getattr(element, conn_type).connect(partial(method, *args))
@@ -120,7 +121,8 @@ def verify_scrcpy_path(path: str) -> bool:
     
     Returns
     -------
-    - `bool`: True if the `scrcpy` and `adb` files are in the same path, False otherwise.
+    - `bool`: True if the `scrcpy` and `adb` files are in the same path on Windows,
+    always True on Linux, False otherwise.
     """
     try:
         path = path["Path"] if isinstance(path, dict) else path
@@ -204,7 +206,8 @@ def update_data_file(value: any, keys: list, delete_value: bool = False) -> None
     ----------
     - value (`any`): The value to be updated.
     - keys (`list`): The keys to be updated.
-    - delete_value (`bool`, `optional`): If True, the value will be deleted. Defaults to False.
+    - delete_value (`bool`, `optional`): If True, the value will be deleted. 
+    Defaults to False.
     """
     path = join(".", "Data", "UserData.json")
     data = open_or_save_data_json(path, "r")
@@ -229,7 +232,9 @@ def get_current_alert_theme() -> dict:
     -------
     - `dict`: The current alert theme.
     """
-    select_theme = open_or_save_data_json(join(".", "Data", "UserData.json"), "r")["Theme_Active"]
+    select_theme = open_or_save_data_json(
+        join(".", "Data", "UserData.json"), "r"
+    )["Theme_Active"]
     return black_theme_Alerts if select_theme == 0 else white_theme_Alerts   
 
 def add_widget_set(widgets: list, positions: list[tuple]) -> QGridLayout:
@@ -262,5 +267,4 @@ def add_widget_set(widgets: list, positions: list[tuple]) -> QGridLayout:
             layout.addWidget(widget, pos[0], pos[1], pos[2], pos[3])
         else: 
             raise ValueError("The number of positions is invalid, it must have 2 or 4 positions")
-    
     return layout
