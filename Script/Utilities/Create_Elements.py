@@ -1,8 +1,15 @@
 from PyQt5 import QtCore
 from PyQt5.QtCore import QRegExp
 from PyQt5.QtGui import QRegExpValidator
-from PyQt5.QtWidgets import (QPushButton, QCheckBox, QRadioButton, 
-                             QSlider, QLabel, QLineEdit, QComboBox)
+from PyQt5.QtWidgets import (
+    QPushButton,
+    QCheckBox,
+    QRadioButton,
+    QSlider,
+    QLabel,
+    QLineEdit,
+    QComboBox
+)
 
 def Button(
     text: str, 
