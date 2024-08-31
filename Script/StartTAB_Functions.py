@@ -1,15 +1,23 @@
 from platform import system
+
 from PyQt5.QtWidgets import QLineEdit, QComboBox, QSlider, QMainWindow
 
 from Script.Thread_Start_Tab import StartTAB_Thread
-from Script.Thread_Config_Tab import ConfigTAB_Thread
-from Script.Utilities.Create_Alerts import create_alert
 from UI.DeviceSelection import DeviceSelectionUI 
-from Script.Utilities.Utils import (verify_scrcpy_path, valid_maxsize_value, 
-                                    get_file_name, update_data_file)
-from Script.Utilities.Auxiliary_Funcs import (get_sliders_start, get_line_edit_start, 
-                                              get_combo_box_start, get_checkBox_start)
 from Script.Utilities.Static_Datas import USERDATA
+from Script.Utilities.Create_Alerts import create_alert
+from Script.Utilities.Utils import (
+    verify_scrcpy_path,
+    valid_maxsize_value,
+    get_file_name,
+    update_data_file,
+)
+from Script.Utilities.Auxiliary_Funcs import (
+    get_sliders_start,
+    get_line_edit_start,
+    get_combo_box_start,
+    get_checkBox_start,
+)
 running_on_windows = system() == "Windows"
 class StartTAB():
     """This class is used to handle the start tab functions"""
@@ -55,7 +63,7 @@ class StartTAB():
             
             for index, combo_box in enumerate(combo_boxs):
                 new_index = data[config_name]["Indexs_Combox"][index]
-                new_index = new_index-1 if index == 0 else new_index
+                new_index = new_index - 1 if index == 0 else new_index
                 combo_box.setCurrentIndex(new_index)       
                      
             for index, check in enumerate(checks):
@@ -177,8 +185,7 @@ class StartTAB():
         - client (`QMainWindow`, `optional`): The client window.
         """
              
-        arg_line = manual_arg_line.text().rstrip().lower().lstrip() if manual_arg_line \
-        else ui_arg_line
+        arg_line = manual_arg_line.text().lower() if manual_arg_line else ui_arg_line
         if valid_maxsize_value(arg_line):
             if path := data["Versions"]["Selected_Version"]["Path"] or not running_on_windows:
                 if verify_scrcpy_path(path):
@@ -259,6 +266,12 @@ class StartTAB():
             "video buffer",
             "audio buffer",
             "time limit",
+            "Mouse",
+            "Keyboard",
+            "Mouse + Keyboard",
+            "AoA",
+            "uHid",
+            "SDK"
         ]
         
         command_line = "" 
