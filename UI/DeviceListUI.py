@@ -1,6 +1,11 @@
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QScrollArea, QWidget, QGroupBox, QVBoxLayout, QGridLayout
-
+from PyQt5.QtWidgets import (
+    QScrollArea,
+    QWidget,
+    QGroupBox,
+    QVBoxLayout,
+    QGridLayout
+)
 from Script.Utilities.Utils import connect_signal
 from Script.ConnectTAB_Functions import DeviceList
 import Script.Utilities.Create_Elements as Create
@@ -60,8 +65,6 @@ class DeviceListUI(QScrollArea):
             self.button_connect,
             self.userdata, 
         )
-        
-
         return self.device_box 
     
     def add_board(self, device_name: str, device_ip: str) -> None:
