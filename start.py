@@ -12,11 +12,11 @@ if not isdir(join(".", "Data")):
 
 userdata_path = join("Data", "UserData.json")
 try:
-    USERDATA = open_or_save_data_json(userdata_path, "r")
+    userdata = open_or_save_data_json(userdata_path, "r")
 except FileNotFoundError:
     open_or_save_data_json(userdata_path, "w", USERDATA)
+    userdata = open_or_save_data_json(userdata_path, "r")
 
 app = QApplication(argv)
-program = Client(USERDATA)
+program = Client(userdata)
 app.exec_()
-
