@@ -1,6 +1,14 @@
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QSlider, QCheckBox,
-                            QComboBox, QLineEdit, QMainWindow, QTabWidget)
+from PyQt5.QtWidgets import (
+    QWidget,
+    QVBoxLayout,
+    QSlider,
+    QCheckBox,
+    QComboBox,
+    QLineEdit,
+    QMainWindow,
+    QTabWidget
+)
 
 from Script.StartTAB_Functions import StartTAB
 from Script.Utilities import Create_Elements as Create
