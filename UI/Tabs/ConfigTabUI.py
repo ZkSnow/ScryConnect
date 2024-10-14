@@ -1,6 +1,12 @@
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import (QWidget, QGridLayout, QSpacerItem, 
-                             QComboBox, QTabWidget, QMainWindow)
+from PyQt5.QtWidgets import (
+    QWidget, 
+    QGridLayout, 
+    QSpacerItem, 
+    QComboBox, 
+    QTabWidget, 
+    QMainWindow
+)
 
 from Script.ConfigTAB_Functions import ConfigTAB
 from Script.Utilities import Create_Elements as Create
