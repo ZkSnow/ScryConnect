@@ -46,12 +46,7 @@ class StartTAB():
         - sliders (`list`): A list of sliders.
         - data (`dict`): A dictionary containing the saved data.
         """
-        
-        if isinstance(combo_box_source, QComboBox):
-            config_name = combo_box_source.currentText()
-        else:
-            config_name = "StartTAB"
-        
+        config_name = combo_box_source.currentText() if combo_box_source else "StartTAB"
         if config_name:
             for index, slider in enumerate(sliders):
                 new_value = data[config_name]["Slider_Value"][index]
@@ -318,7 +313,6 @@ class StartTAB():
         """      
         new_value = slider.value()
         line_edit_value.setText(str(new_value))
-        data["Slider_Value"][index] = new_value
         update_data_file(
             new_value,
             ["Last_Session_Config", "StartTAB", "Slider_Value", index],
@@ -382,8 +376,7 @@ class StartTAB():
         - Index (`int`): The index of the check box in the `data file`.
         - Data (`dict`): The dictionary containing the data.
         """
-        last_check_value = data["Check_Boxes"][index] != True
-        data["Check_Boxes"][index] = last_check_value
+        last_check_value = data["Check_Boxes"][index] = not data["Check_Boxes"][index]
         update_data_file(
             last_check_value,
             ["Last_Session_Config", "StartTAB", "Check_Boxes", index],
