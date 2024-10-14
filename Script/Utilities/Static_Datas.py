@@ -14,6 +14,14 @@ Static datas are data that is constant and does not change during the program ru
 This includes constants used by the program such as Scrcpy arguments, keys for the `UserData.json` file, and UI element positions.
 All of these data are stored in a module so that they can be easily accessed and modified by other parts of the program.
 """
+from pathlib import Path
+from os.path import join
+
+PATH_DATA_DIR = join(
+    Path(__file__).parent.parent.parent.resolve(), # Returns two folders up to the root of the project
+    "Data",
+)
+
 USERDATA = {
     "Theme_Active": 0,
     
