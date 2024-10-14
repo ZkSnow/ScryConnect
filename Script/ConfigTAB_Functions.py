@@ -9,9 +9,13 @@ from PyQt5.QtWidgets import QLineEdit, QComboBox, QFileDialog, QWidget
 from UI.DeviceSelection import DeviceSelectionUI
 from Script.Thread_Config_Tab import ConfigTAB_Thread
 from Script.Utilities.Create_Alerts import create_alert
-from Script.Utilities.Utils import (toggle_button_state, verify_scrcpy_path, 
-                                    update_data_file, open_or_save_data_json)
-from Script.Utilities.Static_Datas import USERDATA
+from Script.Utilities.Static_Datas import USERDATA, PATH_DATA_DIR
+from Script.Utilities.Utils import (
+    toggle_button_state,
+    verify_scrcpy_path, 
+    update_data_file,
+    open_or_save_data_json
+)
 
 running_on_windows = system() == "Windows"
 class ConfigTAB():
@@ -372,7 +376,7 @@ class ConfigTAB():
             "do you want to continue?"), 
             "confirm",
         ):  
-            open_or_save_data_json(join(".", "Data", "UserData.json"), "w", USERDATA)
+            open_or_save_data_json(join(PATH_DATA_DIR, "UserData.json"), "w", USERDATA)
             create_alert(
                 "Closing",
                 "The client will CLOSE to APPLY the CHANGES",
