@@ -9,6 +9,7 @@ from typing import Callable
 
 from PyQt5.QtWidgets import QGridLayout
 from Theme.Style_UI import black_theme_Alerts, white_theme_Alerts
+from Script.Utilities.Static_Datas import PATH_DATA_DIR
 
 running_on_windows = system() == "Windows"
 def open_or_save_data_json(json_url: str, open_mode: str, data_to_save: dict = None) -> dict:
@@ -209,7 +210,7 @@ def update_data_file(value: any, keys: list, delete_value: bool = False) -> None
     - delete_value (`bool`, `optional`): If True, the value will be deleted. 
     Defaults to False.
     """
-    path = join(".", "Data", "UserData.json")
+    path = join(PATH_DATA_DIR, "UserData.json")
     data = open_or_save_data_json(path, "r")
     sub_dict = data
     for index, key in enumerate(keys):
@@ -233,7 +234,7 @@ def get_current_alert_theme() -> dict:
     - `dict`: The current alert theme.
     """
     select_theme = open_or_save_data_json(
-        join(".", "Data", "UserData.json"), "r"
+        join(PATH_DATA_DIR, "UserData.json"), "r"
     )["Theme_Active"]
     return black_theme_Alerts if select_theme == 0 else white_theme_Alerts   
 
