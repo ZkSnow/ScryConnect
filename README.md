@@ -162,6 +162,9 @@ When screen mirroring starts, you can use the following shortcuts to speed thing
  | Drag & drop APK file                        | Install APK from computer
  | Drag & drop non-APK file                    | Push file to device
 
+## :high_brightness: Contribution :high_brightness:
+#### :hammer: Any contribution is welcome, and anyone who wants to help with the project should go ahead without fear! :hammer:
+
 ## License
 The license used for this UI is the **Apache License 2.0** ↓
 ```
@@ -179,4 +182,3 @@ The license used for this UI is the **Apache License 2.0** ↓
   See the License for the specific language governing permissions and
   limitations under the License.
 ```
-

@@ -1,12 +1,17 @@
 from functools import partial
 from platform import system
 
-from PyQt5.QtWidgets import QComboBox, QLineEdit, QGroupBox, QScrollArea
+from PyQt5.QtWidgets import QComboBox, QLineEdit, QScrollArea
+
 from UI.DeviceSelection import DeviceSelectionUI 
 from Script.Thread_Connect_Tab import ConnectTAB_Thread 
 from Script.Thread_FindDevice import FindDeviceW_Thread 
 from Script.Utilities.Create_Alerts import create_alert
-from Script.Utilities.Utils import  toggle_button_state, verify_scrcpy_path, update_data_file
+from Script.Utilities.Utils import (
+    toggle_button_state,
+    verify_scrcpy_path,
+    update_data_file,
+)
 
 running_on_windows = system() == "Windows"
 class ConnectTAB():
@@ -26,7 +31,7 @@ class ConnectTAB():
         """
         create_alert(
             "ALERT",
-            ("Make sure your device is properly " 
+            ("Make sure your device is properly " \
             "configured and connected via USB"),
         )
         original_texts = toggle_button_state(
@@ -93,9 +98,9 @@ class ConnectTAB():
         - line_edits (`list`): The list of line edits `ip`/`port`.
         - data (`dict`): The data of the config file.
         """
-        connect_infos = [obj.text().rstrip().lstrip() for obj in line_edits]
         if path := data["Versions"]["Selected_Version"]["Path"] or not running_on_windows:
             if verify_scrcpy_path(path):
+                connect_infos = [obj.text().rstrip().lstrip() for obj in line_edits]
                 if all(connect_infos):
                     self.connect_device(connect_infos, buttons, path)
                     self.terminal.connect_output.connect(self.terminal.check_emits_connect)
@@ -133,7 +138,8 @@ class ConnectTAB():
         if all(list_edits) and list_edits[0] not in data.keys():
             connection_name = f"{list_edits[0]}:{list_edits[1]}"
             combo_box_target.addItem(connection_name)
-            combo_box_target.setCurrentIndex(combo_box_target.count()-1)
+            combo_box_target.setCurrentIndex(combo_box_target.count() - 1)
+            
             data[connection_name] = list_edits   
             update_data_file(
                 list_edits,
@@ -182,8 +188,8 @@ class ConnectTAB():
         - buttons (`list`): A list of non-concurrent buttons to toggle.
         - data (`dict`): The dictionary containing the userdata.
         """
-        path = data["Versions"]["Selected_Version"]["Path"]
-        if path or not running_on_windows:
+
+        if path := data["Versions"]["Selected_Version"]["Path"] or not running_on_windows:
             if verify_scrcpy_path(path):
                 original_text = toggle_button_state(
                     buttons, 
@@ -255,7 +261,7 @@ class DeviceList():
         Parameters
         ----------
         - buttons (`list`): list of non-concurrent buttons to toggle.
-        - device_list (`QScrollArea`): ui representing the device list.
+        - DeviceListUi (`QScrollArea`): ui representing the device list.
         - data (`dict`): data of the config file.
         """
         if path := data["Selected_Version"]["Path"] or not running_on_windows:

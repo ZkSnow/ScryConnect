@@ -6,8 +6,12 @@ from PyQt5.QtCore import QThread, pyqtSignal
 
 from Script.Utilities.Create_Alerts import create_alert 
 from Script.Utilities.Utils import toggle_button_state, get_file_name
-from Script.Utilities.Auxiliary_Funcs import (device_errors, args_combination_errors,
-                                              arguments_errors, move_record_file)
+from Script.Utilities.Auxiliary_Funcs import (
+    device_errors,
+    args_combination_errors,
+    arguments_errors,
+    move_record_file
+)
 class StartTAB_Thread(QThread):
     """
     This class is used to run the `start` commands in a `separate thread`.
@@ -99,14 +103,14 @@ class StartTAB_Thread(QThread):
         if system() == "Windows":
             cmd = f"start cmd.exe /k adb -s {self.func_args[0]} shell"
         else: #Linux
-            terminal_emulator = subprocess.run(
+            terminal = subprocess.run(
                 args=f"ls /usr/bin | grep terminal",
                 shell=True,
                 stdout=subprocess.PIPE,
                 cwd=self.path,
             ).stdout.decode("utf-8").rstrip()
-            terminal_emulator = terminal_emulator.split()[0]
-            cmd = f"{terminal_emulator} -- bash -c 'adb -s {self.func_args[0]} shell; exec bash'"
+            terminal = terminal.split()[0]
+            cmd = f"{terminal} -- bash -c 'adb -s {self.func_args[0]} shell; exec bash'"
             
         subprocess.run(
             args=cmd,

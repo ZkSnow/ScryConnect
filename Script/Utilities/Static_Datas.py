@@ -1,4 +1,26 @@
-"""This module contains the static datas."""
+"""
+This module contains the static datas for ScryConnect, 
+this includes the keys and other informations that are used in other parts of the program.
+
+The static datas are divided into 4 categories:
+
+- `USERDATA`: Stores user data, such as theme, saved IPs/ports, and connected devices.
+- `ARGS_LIST` and `EXTRA_ARGS_LIST`: These are lists of arguments that can be passed to Scrcpy.
+- `ERRORS_LIST`: This is a list of some errors codes that can be returned by Scrcpy.
+- `LAYOUT_POSITIONS`: Positions of UI elements in layout.
+
+
+Static datas are data that is constant and does not change during the program runtime.
+This includes constants used by the program such as Scrcpy arguments, keys for the `UserData.json` file, and UI element positions.
+All of these data are stored in a module so that they can be easily accessed and modified by other parts of the program.
+"""
+from pathlib import Path
+from os.path import join
+
+PATH_DATA_DIR = join(
+    Path(__file__).parent.parent.parent.resolve(), # Returns two folders up to the root of the project
+    "Data",
+)
 
 USERDATA = {
     "Theme_Active": 0,
@@ -43,7 +65,7 @@ USERDATA = {
                                None,
                                None],
             "Slider_Value": [60, 1000, 8, 0, 0, 0],
-            "Indexs_Combox": [0, 0, 0, 0, 0, 0],
+            "Indexs_Combox": [0, 0, 0, 0, 0, 0, 0],
             "Check_Boxes": [False, False, False,
                             False, False, False, False,
                             False, False, False, False, False,
@@ -58,7 +80,6 @@ USERDATA = {
     }
 
 ARGS_LIST = {
-    
     "scrcpy_2.0": {
         "Version": 2.0,
         "audio buffer": " --audio-buffer ",
@@ -121,23 +142,30 @@ EXTRA_ARGS_LIST = {
         
         "Initial Orientation": " --lock-video-orientation",
         "Vertical Orientation": " --lock-video-orientation=0",
-        "Upside Down": " --lock-video-orientation=90",
-        "Horizontal Left": " --lock-video-orientation=180", 
-        "Horizontal Right": " --lock-video-orientation=270",
+        "Upside Down": " --lock-video-orientation=180",
+        "Horizontal Left": " --lock-video-orientation=270", 
+        "Horizontal Right": " --lock-video-orientation=90",
     },
     
     "all_version": {
-        "Mouse": " --otg --hid-mouse",
-        "Keyboard": " --otg --hid-keyboard",
-        "Mouse + Keyboard": " --otg --hid-keyboard --hid-mouse",
+        "AoA Mouse": " --otg --mouse=aoa",
+        "SDK Mouse": " --mouse=sdk",
+        "uHid Mouse": " --mouse=uhid",
+        "AoA Keyboard": " --otg --keyboard=aoa",
+        "SDK Keyboard": " --keyboard=sdk",
+        "uHid Keyboard": " --keyboard=uhid",
+        "AoA Mouse + Keyboard": " --otg --mouse=aoa --keyboard=aoa",
+        "SDK Mouse + Keyboard": " --mouse=sdk --keyboard=sdk",
+        "uHid Mouse + Keyboard": " --mouse=uhid --keyboard=uhid",
     },
     "deprecated_args": {
         "limit_2.2": {
             "Version": 2.2,
+            
             "Initial Orientation": " --lock-video-orientation",
             "Vertical Orientation": " --lock-video-orientation=0",
             "Upside Down": " --lock-video-orientation=2",
-            "Horizontal Left": " --lock-video-orientation=1", 
+            "Horizontal Left": " --lock-video-orientation=1",
             "Horizontal Right": " --lock-video-orientation=3",
         }
     }
@@ -228,10 +256,11 @@ LAYOUT_POSITIONS = {
             (7, 4, 1, 2),
             (8, 4),
             (9, 4, 1, 2),
-            (10, 4),
-            (10, 5),
-            (11, 4, 1, 2),
-            (12, 4),
+            (10, 4, 1, 2),
+            (11, 4),
+            (11, 5),
+            (12, 4, 1, 2),
+            (13, 4),
                 ],
                 
         "lower":[
@@ -289,4 +318,4 @@ LAYOUT_POSITIONS = {
             (5, 0, 1, 2),
         ],
     },
-} 
+}

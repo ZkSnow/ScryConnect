@@ -35,7 +35,9 @@ def create_alert(
     - `ValueError`: If `alert_type` is not a valid alert type.
     """
     if alert_type not in ["alert", "input", "confirm"]:
-        raise ValueError(f"The '{alert_type}' mode is invalid --> 'alert' | 'input' | 'confirm'")
+        raise ValueError(
+            f"The '{alert_type}' mode is invalid --> 'alert' | 'input' | 'confirm'"
+        )
     
     alert = QDialog(None)
     alert.setWindowIcon(QIcon(join(":", "icon_alert.ico")))

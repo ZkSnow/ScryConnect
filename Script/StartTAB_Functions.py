@@ -1,15 +1,23 @@
 from platform import system
+
 from PyQt5.QtWidgets import QLineEdit, QComboBox, QSlider, QMainWindow
 
 from Script.Thread_Start_Tab import StartTAB_Thread
-from Script.Thread_Config_Tab import ConfigTAB_Thread
-from Script.Utilities.Create_Alerts import create_alert
 from UI.DeviceSelection import DeviceSelectionUI 
-from Script.Utilities.Utils import (verify_scrcpy_path, valid_maxsize_value, 
-                                    get_file_name, update_data_file)
-from Script.Utilities.Auxiliary_Funcs import (get_sliders_start, get_line_edit_start, 
-                                              get_combo_box_start, get_checkBox_start)
 from Script.Utilities.Static_Datas import USERDATA
+from Script.Utilities.Create_Alerts import create_alert
+from Script.Utilities.Utils import (
+    verify_scrcpy_path,
+    valid_maxsize_value,
+    get_file_name,
+    update_data_file,
+)
+from Script.Utilities.Auxiliary_Funcs import (
+    get_sliders_start,
+    get_line_edit_start,
+    get_combo_box_start,
+    get_checkBox_start,
+)
 running_on_windows = system() == "Windows"
 class StartTAB():
     """This class is used to handle the start tab functions"""
@@ -38,12 +46,7 @@ class StartTAB():
         - sliders (`list`): A list of sliders.
         - data (`dict`): A dictionary containing the saved data.
         """
-        
-        if isinstance(combo_box_source, QComboBox):
-            config_name = combo_box_source.currentText()
-        else:
-            config_name = "StartTAB"
-        
+        config_name = combo_box_source.currentText() if combo_box_source else "StartTAB"
         if config_name:
             for index, slider in enumerate(sliders):
                 new_value = data[config_name]["Slider_Value"][index]
@@ -55,7 +58,7 @@ class StartTAB():
             
             for index, combo_box in enumerate(combo_boxs):
                 new_index = data[config_name]["Indexs_Combox"][index]
-                new_index = new_index-1 if index == 0 else new_index
+                new_index = new_index - 1 if index == 0 else new_index
                 combo_box.setCurrentIndex(new_index)       
                      
             for index, check in enumerate(checks):
@@ -177,8 +180,7 @@ class StartTAB():
         - client (`QMainWindow`, `optional`): The client window.
         """
              
-        arg_line = manual_arg_line.text().rstrip().lower().lstrip() if manual_arg_line \
-        else ui_arg_line
+        arg_line = manual_arg_line.text().lower() if manual_arg_line else ui_arg_line
         if valid_maxsize_value(arg_line):
             if path := data["Versions"]["Selected_Version"]["Path"] or not running_on_windows:
                 if verify_scrcpy_path(path):
@@ -259,6 +261,12 @@ class StartTAB():
             "video buffer",
             "audio buffer",
             "time limit",
+            "Mouse",
+            "Keyboard",
+            "Mouse + Keyboard",
+            "AoA",
+            "uHid",
+            "SDK"
         ]
         
         command_line = "" 
@@ -305,7 +313,6 @@ class StartTAB():
         """      
         new_value = slider.value()
         line_edit_value.setText(str(new_value))
-        data["Slider_Value"][index] = new_value
         update_data_file(
             new_value,
             ["Last_Session_Config", "StartTAB", "Slider_Value", index],
@@ -369,8 +376,7 @@ class StartTAB():
         - Index (`int`): The index of the check box in the `data file`.
         - Data (`dict`): The dictionary containing the data.
         """
-        last_check_value = data["Check_Boxes"][index] != True
-        data["Check_Boxes"][index] = last_check_value
+        last_check_value = data["Check_Boxes"][index] = not data["Check_Boxes"][index]
         update_data_file(
             last_check_value,
             ["Last_Session_Config", "StartTAB", "Check_Boxes", index],
