@@ -68,7 +68,7 @@ def get_line_edit_start(line_edits: list, active_checks: list, record_combox: QC
 
             if extension_file  in ["opus", "aac"] and scrcpy_version >= 2.1:
                 args_line += f" --audio-codec={extension_file}"
-            args_line += f" --record {lineedit.text() or "video"}.{extension_file}"
+            args_line += f" --record {lineedit.text() or 'video'}.{extension_file}"
             
         if "crop" in active_checks and index == 1:
             args_line += f" --crop {lineedit.text()}"
@@ -385,7 +385,7 @@ def args_combination_errors(err_out: list) -> bool:
     return error_detect
 
 #Errors for connection
-def connection_errors(emit_tcpip: str, emit_connect: str) -> bool:
+def connection_errors(emit_tcpip: str = "", emit_connect: str = "") -> bool:
     """
     This function checks if there are any `connection errors` and creates an alert if there are any.
     
@@ -443,6 +443,11 @@ def connection_errors(emit_tcpip: str, emit_connect: str) -> bool:
             "Connection Failed",
             ("The connection was refused by the destination device,\n"
              "or the device is offline")
+        )
+    elif "protocol fault" in emit_connect:
+        create_alert(
+            "Protocol Fault",
+            "The protocol faulted, make sure the IP/PORT is valid",
         )
     else:
         error_detect = False
