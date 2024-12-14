@@ -13,17 +13,25 @@ from Script.Utilities.Static_Datas import (ERRORS_LIST, EXTRA_ARGS_LIST,
 #get elements for start semi-auto mode
 def get_sliders_start(sliders: list, active_checks: list, scrcpy_version: float) -> str:
     """
-    Generate arg_line of the `sliders`.
+    Generates the argument line for configuring `sliders` based on their values and associated conditions.
+
+    This function builds a command-line argument string (`arg_line`) for the `sliders`, which can be 
+    used in the context of configuring settings for a `scrcpy` application. The function takes the 
+    values of the sliders and optionally includes different settings based on the version of `scrcpy` 
+    and the active checks.
 
     Parameters
     ----------
-    - sliders (`List[QSlider]`): A list of QSlider objects.
-    - active_checks list (`List[str]`): A list of active checks.
-    - scrcpy_version (`float`): The scrcpy version.
-    
-    Returns:
-    - str: arg_line of the `sliders`.
-    """
+    - sliders (`List[QSlider]`): A list of `QSlider` objects representing various configuration options.
+    - active_checks (`List[str]`): A list of active checks, which are conditions that influence the 
+      command-line arguments (e.g., "video buffer", "audio buffer", "time limit").
+    - scrcpy_version (`float`): The version of `scrcpy` being used. The argument format may vary depending 
+      on the version (e.g., bitrate or video buffer options).
+
+    Returns
+    -------
+    - `str`: The generated command-line argument string (`arg_line`) based on the slider values and active checks.
+"""
     args_line = ""
     for index, slider in enumerate(sliders):
         args_line += f" --max-fps {slider.value()}" if index == 0 else ""
@@ -46,19 +54,24 @@ def get_sliders_start(sliders: list, active_checks: list, scrcpy_version: float)
 
 def get_line_edit_start(line_edits: list, active_checks: list, record_combox: QComboBox, scrcpy_version: float) -> str:
     """
-    Generate arg_line of the `lineEdits`.
+    Generates the argument line for configuring `lineEdits` based on their values and associated conditions.
+
+    This function builds a command-line argument string (`arg_line`) for the `lineEdits`, which can be 
+    used in the context of configuring settings for a `scrcpy` application. The function checks the values 
+    of the `lineEdits` and optionally includes different settings based on the active checks and the version of 
+    `scrcpy`.
 
     Parameters
     ----------
-    - line_edits list (`List[QLineEdit]`): A list of QLineEdit objects.
-    - active_checks list (`List[str]`): A list of active checks.
-    - record_combox (`QComboBox`): A QComboBox object for the record file name.
-    - scrcpy_version (`float`): The scrcpy version.
-    
+    - line_edits (`List[QLineEdit]`): A list of `QLineEdit` objects representing various configuration options.
+    - active_checks (`List[str]`): A list of active checks that influence the command-line arguments (e.g., "record", "crop").
+    - record_combox (`QComboBox`): A `QComboBox` object used to select the recording file format (e.g., "mp4", "opus", "aac").
+    - scrcpy_version (`float`): The version of `scrcpy` being used. The argument format may vary depending on the version (e.g., audio codec options, recording format).
+
     Returns
     -------
-    - str: arg_line of the `lineEdits`.
-    """
+    - `str`: The generated command-line argument string (`arg_line`) based on the `lineEdits` and active checks.
+"""
     args_line = ""
     for index, lineedit in enumerate(line_edits):
         if "record" in active_checks and index == 0:
@@ -77,15 +90,29 @@ def get_line_edit_start(line_edits: list, active_checks: list, record_combox: QC
 
 def get_combo_box_start(combo_boxs: list, scrcpy_version: float) -> str:
     """
-    Generate arg_line of the `comboBoxs` selections.
+    Generates the argument line for the selections in the `comboBoxs`.
+
+    This function constructs a command-line argument string (`arg_line`) based on the selected values in the 
+    provided `QComboBox` objects. It uses predefined arguments stored in `EXTRA_ARGS_LIST` to adjust the command 
+    according to the selected options and the version of `scrcpy`.
 
     Parameters
     ----------
-    - combo_boxs (`List[QComboBox]`): A list of QComboBox objects.
-    - scrcpy_version (float): The scrcpy version.
-    
-    Returns:
-    - str: arg_line of the `comboboxs`.
+    - combo_boxs (`List[QComboBox]`): A list of `QComboBox` objects representing different configuration options.
+    - scrcpy_version (`float`): The version of `scrcpy`. The argument format may vary depending on the version.
+
+    Returns
+    -------
+    - `str`: The generated command-line argument string (`arg_line`) based on the selections in the `comboBoxs`.
+
+    Notes
+    -----
+    - The function collects the selected texts from all `QComboBox` objects, except for the first one.
+    - The selected values are then matched against predefined arguments stored in `EXTRA_ARGS_LIST`.
+    - The `EXTRA_ARGS_LIST` is assumed to contain version-specific argument mappings, which may vary depending on the `scrcpy_version` and the selected values from the combo boxes.
+    - If `scrcpy_version` is lower than certain specified limits, deprecated or older arguments may be included.
+    - The function combines multiple selections in the last two combo boxes into a single key for argument construction.
+    - The generated argument line will include different settings for specific `scrcpy_version` values.
     """
     args_line = ""
     combo_boxs_texts = [combo_box.currentText() for combo_box in combo_boxs[1:]]
@@ -114,17 +141,33 @@ def get_combo_box_start(combo_boxs: list, scrcpy_version: float) -> str:
 
 def get_checkBox_start(active_checks: list, args_w_required_values: list, scrcpy_version: float) -> tuple:
     """
-    Generate arg_line of the checkBox.
+    Generates the argument line for the selected checkboxes.
+
+    This function constructs a command-line argument string (`arg_line`) based on the active checks in the 
+    provided list. It checks the selected options against predefined arguments stored in `ARGS_LIST` and 
+    adjusts the generated arguments according to the version of `scrcpy`.
 
     Parameters
     ----------
-    - active_checks (`list`): A list of active checks.
-    - args_w_required_values (`list`): A list of arg names that requires a value.
-    - scrcpy_version (float): The scrcpy version.
+    - active_checks (`list`): A list of active checks (strings) representing the options selected by the user.
+    - args_w_required_values (`list`): A list of argument names that require additional values. These will be excluded from `active_checks`.
+    - scrcpy_version (`float`): The version of `scrcpy`. The argument format may vary depending on the version.
 
     Returns
     -------
-    - `tuple`: A tuple containing the arg_line and the hide_client value.
+    - `tuple`: A tuple containing:
+      - `arg_line` (`str`): The generated command-line argument string based on the active checkboxes.
+      - `hide_client` (`bool`): A flag indicating whether the "hide client" option is selected.
+
+    Notes
+    -----
+    - The function filters out `active_checks` that match entries in `args_w_required_values`, ensuring only the options
+    that don't require additional values are included.
+    - The function uses the predefined `ARGS_LIST` to generate the argument string. The `ARGS_LIST` is assumed to contain 
+    version-specific argument mappings for different `scrcpy_version` values.
+    - If `scrcpy_version` is greater than or equal to the version specified in `ARGS_LIST`, the corresponding arguments 
+    are included in the `arg_line`.
+    - The function also checks if the "hide client" option is selected, and returns a `True` or `False` value for that.
     """
     args_line = ""
     active_checks = [check for check in active_checks if check not in args_w_required_values]
@@ -144,18 +187,31 @@ def get_checkBox_start(active_checks: list, args_w_required_values: list, scrcpy
 #move saved video from --record (-r)
 def move_record_file(record_file: str, path: str, target_path: str, custom_dir_enabled: bool) -> None:
     """
-    This function moves the saved `video file` from the `--record` (`-r`) argument to the target path.
-    
+    Moves a saved video file to the target directory.
+
+    This function moves a recorded video file (created using the `--record` argument) from its original path 
+    to a target destination. If a custom directory is enabled, the file is renamed to avoid conflicts 
+    with existing files in the target directory.
+
     Parameters
     ----------
-    - record_file (`str`): The name of the saved video file.
-    - path (`str`): The path where the saved video file is located.
-    - target_path (`str`): The path where the saved video file will be moved.
-    - custom_dir_enabled (`bool`): Whether the custom directory is enabled.
+    - record_file (`str`): The name of the saved video file (e.g., "video.mp4").
+    - path (`str`): The current path where the video file is located (before moving).
+    - target_path (`str`): The target path where the video file should be moved.
+    - custom_dir_enabled (`bool`): A flag indicating whether a custom directory is enabled for saving the file. 
+    If `True`, the file is renamed if a file with the same name exists in the target directory.
     
-    Returns
-    -------
-    - `None`
+    Raises
+    ------
+    - `FileNotFoundError`: If the target directory is not found.
+    - `TypeError`: If there is an issue with the file or path provided.
+
+    Notes
+    -----
+    - If `custom_dir_enabled` is `True`, the function checks the target directory for existing files with the same name. 
+    If a conflict is detected, it renames the file by appending an index (e.g., `video_1.mp4`) until it finds a unique name.
+    - If `custom_dir_enabled` is `False`, the file is moved without renaming, and a success alert is shown.
+    - If any error occurs during the process (such as a missing target directory), an alert is shown to the user.
     """
     if record_file:
         if custom_dir_enabled:
@@ -195,15 +251,22 @@ def move_record_file(record_file: str, path: str, target_path: str, custom_dir_e
 #Errors for start_scrcpy
 def arguments_errors(err_out: list) -> bool:
     """
-    This function checks if there are any `argument errors` and creates an alert if there are any.
-    
+    Checks for argument errors and creates alerts for specific error conditions.
+
+    This function examines the provided list of errors (`err_out`) and checks for specific conditions 
+    related to argument errors. Depending on the type of error, it will show an appropriate alert 
+    message to the user. The function handles various types of errors, including unexpected arguments, 
+    value errors, and issues related to specific scrcpy options.
+
     Parameters
     ----------
-    - err_out (`list`): A list of errors.
-    
+    - err_out (`list`): A list of error messages or strings returned from a command execution. 
+    This list is checked against predefined sets of known errors to identify any issues.
+
     Returns
     -------
-    - `bool`: `True` if there are no errors, `False` otherwise.
+    - `bool`: Returns `True` if no errors are found (meaning the arguments are valid). 
+    Returns `False` if any recognized error is detected and an alert is triggered.
     """
     error_detect = True
     if any(error in err_out for error in ERRORS_LIST["args_unexpected"]):
@@ -279,15 +342,22 @@ def arguments_errors(err_out: list) -> bool:
     
 def device_errors(err_out: list) -> bool:
     """
-    This function checks if there are any `device errors` and creates an alert if there are any.
-    
+    Checks for device errors and creates alerts for specific error conditions.
+
+    This function checks the provided list of error messages (`err_out`) for specific errors 
+    related to device connectivity and configuration issues. If any recognized error is found, 
+    it triggers an alert to inform the user about the problem. The function handles errors such as 
+    device not being detected, connection issues, encoding errors, and more.
+
     Parameters
     ----------
-    - err_out (`list`): The list of error messages.
-    
+    - err_out (`list`): A list of error messages returned from a command execution or device operation. 
+    This list is checked against known device-related error conditions to determine if any specific errors have occurred.
+
     Returns
     -------
-    - `bool`: `True` if there are no errors, `False` otherwise.
+    - `bool`: Returns `True` if no errors are found (indicating that the device is functioning correctly). 
+    Returns `False` if any recognized device-related error is found, triggering an alert to the user.
     """
     error_detect = True
     if any(error in err_out for error in ERRORS_LIST["device_not_found"]):
@@ -350,15 +420,21 @@ def device_errors(err_out: list) -> bool:
 
 def args_combination_errors(err_out: list) -> bool:
     """
-    This function checks if there are any args `combination errors` and creates an alert if there are any.
-    
+    Checks for argument combination errors and creates alerts for specific incompatible arguments.
+
+    This function checks the provided output (`err_out`) of an adb command for known argument 
+    combination errors, specifically when two or more arguments are incompatible with each other. 
+    If such errors are found, it triggers an alert to inform the user about the conflicting arguments. 
+    The function helps ensure that incompatible argument combinations are not used simultaneously.
+
     Parameters
     ----------
-    - err_out (str): The output of the adb command.
-    
+    - err_out (`str`): The output string from the adb command or scrcpy operation, containing error messages.
+
     Returns
     -------
-    - `bool`: `True` if there are no errors, `False` otherwise.
+    - `bool`: Returns `True` if no errors are detected (indicating that all argument combinations are valid). 
+    Returns `False` if any incompatible argument combinations are found, triggering an alert to the user.
     """
     error_detect = True
     if "--prefer-text is incompatible with --raw-key-events" in err_out:
@@ -387,16 +463,21 @@ def args_combination_errors(err_out: list) -> bool:
 #Errors for connection
 def connection_errors(emit_tcpip: str = "", emit_connect: str = "") -> bool:
     """
-    This function checks if there are any `connection errors` and creates an alert if there are any.
-    
+    Checks for connection errors and creates alerts based on specific issues.
+
+    This function checks the provided output (`emit_tcpip` and `emit_connect`) for known connection errors.
+    If any connection-related issues are detected, it triggers an alert to inform the user about the problem.
+    The function is designed to help identify issues related to establishing a connection with a device or server.
+
     Parameters
     ----------
-    - emit_tcpip (str): The output of the tcpip command.
-    - emit_connect (str): The output of the connect command.
-    
+    - emit_tcpip (`str`): The output of the `tcpip` command, which can indicate connection errors related to IP or port issues.
+    - emit_connect (`str`): The output of the `connect` command, which can indicate connection issues such as already connected devices, timeouts, or refusals.
+
     Returns
     -------
-    - `bool`: `True` if there are no errors, `False` otherwise.
+    - `bool`: Returns `True` if no connection errors are detected, allowing the process to proceed.
+    Returns `False` if any connection errors are found, triggering an alert to the user.
     """
     error_detect = True
     if "already connected to" in emit_connect:
@@ -456,25 +537,44 @@ def connection_errors(emit_tcpip: str = "", emit_connect: str = "") -> bool:
         
 def assemble_grid_layout(tab_name: str, locate: str, *elements: tuple) -> QGridLayout:
     """
-    This function is used to `assemble` the grid layout for the tab. It takes the tab name, 
-    location, and elements and returns a `QGridLayout` with the appropriate `positions`.
-    
+    Assembles a QGridLayout for the specified tab and location with the provided elements.
+
+    This function is used to construct a grid layout for a tab in the user interface. Based on the tab name
+    ('connect_tab', 'start_tab', 'config_tab') and the location ('upper', 'middle', 'lower'), it arranges
+    the provided elements in the appropriate grid positions. The elements are placed according to predefined
+    positions for each tab and location.
+
     Parameters
     ----------
-    - tab_name (`str`): The name of the tab, either 'connect_tab', 'start_tab' or 'config_tab'.
-    - locate (`str`): The location of the elements, either 'upper', 'middle', or 'lower'.
-    - elements (`tuple`): The elements to be added to the grid layout.
-    
+    - tab_name (`str`): The name of the tab where the layout will be applied. It can be one of the following:
+      - `'connect_tab'`: A tab related to device connection.
+      - `'start_tab'`: A tab for starting operations.
+      - `'config_tab'`: A tab for configuring settings.
+
+    - locate (`str`): The location where the elements will be placed within the grid. It can be one of the following:
+      - `'upper'`: The upper section of the layout.
+      - `'middle'`: The middle section of the layout.
+      - `'lower'`: The lower section of the layout.
+
+    - elements (`tuple`): A variable number of elements (widgets or other UI components) to be added to the grid layout.
+
     Returns
     -------
-    - `QGridLayout`: A `QGridLayout` with the appropriate `positions`.
-    
+    - `QGridLayout`: A `QGridLayout` instance with the elements positioned according to the tab and location.
+
     Raises
     ------
-    - `ValueError`: If the tab name is not valid.
-    - `ValueError`: If the location is not valid.
-    - `ValueError`: If the number of elements does not match the number of positions.
-    - `KeyError`: If the keys are not valid for the chosen location.
+    - `ValueError`: If the `tab_name` is not one of the predefined valid values (`'connect_tab'`, `'start_tab'`, `'config_tab'`).
+    - `ValueError`: If the `locate` parameter is not one of the valid location values (`'upper'`, `'middle'`, `'lower'`).
+    - `ValueError`: If the number of elements provided does not match the number of positions available for the given `tab_name` and `locate`.
+    - `KeyError`: If the specified `tab_name` and `locate` combination does not have valid predefined positions.
+
+    Notes
+    -----
+    - This function uses predefined position mappings for each tab and location. The number of elements passed
+    must match the number of positions in the corresponding grid layout.
+    - The grid layout will automatically adjust based on the tab and location, placing the elements in the right
+    spots on the user interface.
     """
     tab_name = tab_name.lower().rstrip().lstrip()
     if tab_name not in ["connect_tab", "start_tab", "config_tab"]:
@@ -507,21 +607,32 @@ def assemble_grid_layout(tab_name: str, locate: str, *elements: tuple) -> QGridL
 #takes the data needed for the UI to work correctly
 def get_datas_for_ui(data: dict, data_for: str) -> tuple:
     """
-    This function takes the data needed for the `UI` to work correctly.
-    
+    Retrieves the necessary data for the user interface (UI) based on the specified category.
+
+    This function extracts specific data from the provided dictionary based on the category 
+    specified in the `data_for` argument. The data is used to populate the user interface for 
+    different sections (connect, start, or config). 
+
     Parameters
     ----------
-    - data (`dict`): A dictionary containing the data.
-    - data_for (`str`): The type of data to be retrieved. Must be one of 'connect', 'start', or 'config'.
-    
+    - data (`dict`): A dictionary containing various configurations and session data. 
+    It should include keys like 'Connect', 'Last_Session_Config', 'Custom_Config_Set', 
+    'Versions', 'Resolutions', 'File_Path_Config', and others based on the UI sections.
+
+    - data_for (`str`): The category of data to retrieve. It must be one of the following:
+    - `'connect'`: Retrieves data related to the connection tab.
+    - `'start'`: Retrieves data related to the start tab.
+    - `'config'`: Retrieves data related to the config tab.
+
     Returns
     -------
-    - `tuple`: A tuple containing the datas.
+    - `tuple`: A tuple containing the relevant data for the specified category.
     
     Raises
     ------
-    - `ValueError`: If the data type is not valid.
-    - `ValueError`: If the data is not a dictionary.
+    - `ValueError`: If the `data_for` is not one of the allowed values (`'connect'`, `'start'`, or `'config'`).
+    - `ValueError`: If the `data` parameter is not a dictionary.
+    - `KeyError`: If the keys expected in the dictionary (`'Connect'`, `'Last_Session_Config'`, etc.) do not exist in the provided data.
     """
     if not isinstance(data_for, str):
         raise ValueError("'data_for' must be a string")

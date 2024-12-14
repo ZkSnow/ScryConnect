@@ -9,30 +9,44 @@ from Script.Utilities.Utils import get_current_alert_theme
 from Theme.icon_alert import *
 
 def create_alert(
-    title: str = "Default Title", 
-    msg: str = "Default Menssage", 
+    title: str = "", 
+    msg: str = "", 
     alert_type: str = "alert",
     regex_filter: str = None,
 ) -> Union[None, str, bool]:
     """
-    This function creates an alert, it can be `alert`, `input` or `confirm`, depending on the `alert_type` parameter.
-    
+    Creates an alert dialog with different types of interactions.
+
+    This function can create three types of alerts: 
+    - `alert`: A simple informational alert with an "OK" button.
+    - `input`: A prompt for the user to enter text, with validation via regex.
+    - `confirm`: A confirmation dialog with "OK" and "Cancel" buttons.
+
     Parameters
     ----------
-    - title (`str`, `optional`): The title of the alert. Defaults to "Default Title".
-    - msg (`str`, `optional`): The message of the alert. Defaults to "Default Menssage".
-    - alert_type (`str`, `optional`): The type of the alert. Defaults to "alert".
-    - regex_filter (`str`, `optional`): The regex filter to be applied to the input. Defaults to None.
-    
+    - title (`str`, optional): The title of the alert dialog. Defaults to `""`.
+    - msg (`str`, optional): The message displayed in the alert. Defaults to `""`.
+    - alert_type (`str`, optional): The type of alert to create. 
+    Must be one of `"alert"`, `"input"`, or `"confirm"`. Defaults to `"alert"`.
+    - regex_filter (`str`, optional): A regular expression used to validate the input text 
+    when `alert_type` is `"input"`. Defaults to `None`.
+
     Returns
     -------
-    - `None` if alert_type is `alert`.
-    - (`str`, `bool`) if alert_type is `input`.
-    - `bool` if alert_type is `confirm`.
-    
+    - `None`: If the `alert_type` is `"alert"`.
+    - `str`, `bool`: If the `alert_type` is `"input"`, returns the entered text (as a string) 
+    and a boolean indicating whether the user confirmed the input.
+    - `bool`: If the `alert_type` is `"confirm"`, returns `True` if the user clicked "OK", 
+    and `False` if the user clicked "Cancel".
+
     Raises
     ------
-    - `ValueError`: If `alert_type` is not a valid alert type.
+    - `ValueError`: If `alert_type` is not one of `"alert"`, `"input"`, or `"confirm"`.
+    
+    Notes
+    -----
+    - If `regex_filter` is provided, it is used to validate the user input in the `"input"` alert type.
+    - The dialog appearance is customized using a predefined stylesheet (`get_current_alert_theme()`), and an icon (`icon_alert.ico`).
     """
     if alert_type not in ["alert", "input", "confirm"]:
         raise ValueError(

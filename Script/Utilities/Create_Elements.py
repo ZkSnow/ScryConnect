@@ -17,7 +17,31 @@ def Button(
     w_h: tuple = None, 
     object_name: str = None
 ) -> QPushButton:
-    """Create a button (QPushButton)"""
+    """
+    Creates a QPushButton instance with optional customization.
+
+    This function simplifies the creation of a `QPushButton` widget, allowing you 
+    to set its parent, dimensions, and object name during initialization.
+
+    Parameters
+    ----------
+    - text (`str`): The label or text displayed on the button.
+    - parent (`any`, optional): The parent widget of the button. Defaults to `None`.
+    - w_h (`tuple`, optional): A tuple `(width, height)` specifying the minimum dimensions of the button. 
+    Defaults to `None`.
+    - object_name (`str`, optional): The object name assigned to the button for styling or identification purposes. 
+    Defaults to `None`.
+
+    Returns
+    -------
+    - `QPushButton`: A configured `QPushButton` instance.
+    
+    Notes
+    -----
+    - If `w_h` is provided, it sets the button's minimum size using the values in the tuple.
+    - If `object_name` is provided, it assigns the name to the button for identification 
+    (useful for styling with QSS).
+    """
     button = QPushButton(text, parent)  
     if w_h:
         button.setMinimumSize(w_h[0], w_h[1])
@@ -34,7 +58,35 @@ def CheckBox(
     active: bool = False, 
     object_name: str = None
 ) -> QCheckBox:
-    """Create a checkbox (QCheckBox)"""
+    """
+    Creates a QCheckBox instance with optional customization.
+
+    This function facilitates the creation of a `QCheckBox` widget, allowing you 
+    to configure its parent, dimensions, initial state, and object name.
+
+    Parameters
+    ----------
+    - text (`str`): The label or text displayed next to the checkbox.
+    - parent (`any`, optional): The parent widget of the checkbox. Defaults to `None`.
+    - w_h (`tuple`, optional): A tuple `(width, height)` specifying the minimum dimensions of the checkbox. 
+    Defaults to `None`.
+    - active (`bool`, optional): Specifies whether the checkbox should be checked (`True`) or unchecked (`False`) 
+    initially. Defaults to `False`.
+    - object_name (`str`, optional): The object name assigned to the checkbox for styling or identification purposes. 
+    Defaults to `None`.
+
+    Returns
+    -------
+    - `QCheckBox`: A configured `QCheckBox` instance.
+
+    Notes
+    -----
+    - If `w_h` is provided, it sets the checkbox's minimum size using the values in the tuple.
+    - The `active` parameter allows you to predefine the initial state of the checkbox 
+    (checked or unchecked).
+    - If `object_name` is provided, it assigns the name to the checkbox for identification 
+    (useful for styling with QSS).
+    """
     check_box = QCheckBox(text, parent)
     check_box.setChecked(active)
     if w_h:
@@ -52,7 +104,35 @@ def RadioButton(
     active: bool = False, 
     object_name: str = None
 ) -> QRadioButton:
-    """Create a radio button (QRadioButton)"""
+    """
+    Creates a QRadioButton instance with optional customization.
+
+    This function simplifies the creation of a `QRadioButton` widget, allowing you 
+    to set its parent, dimensions, initial state, and object name during initialization.
+
+    Parameters
+    ----------
+    - text (`str`): The label or text displayed next to the radio button.
+    - parent (`any`, optional): The parent widget of the radio button. Defaults to `None`.
+    - w_h (`tuple`, optional): A tuple `(width, height)` specifying the minimum dimensions of the radio button. 
+    Defaults to `None`.
+    - active (`bool`, optional): Indicates whether the radio button should be selected (`True`) or deselected (`False`) 
+    initially. Defaults to `False`.
+    - object_name (`str`, optional): The object name assigned to the radio button for styling or identification purposes. 
+    Defaults to `None`.
+
+    Returns
+    -------
+    - `QRadioButton`: A configured `QRadioButton` instance.
+    
+    Notes
+    -----
+    - If `w_h` is provided, it sets the radio button's minimum size using the values in the tuple.
+    - The `active` parameter allows you to predefine the initial state of the radio button 
+    (selected or not selected).
+    - If `object_name` is provided, it assigns the name to the radio button for identification 
+    (useful for styling with QSS).
+    """
     radio = QRadioButton(text, parent)
     radio.setChecked(active)
     if w_h:
@@ -70,7 +150,36 @@ def Combox(
     index: int = 0, 
     object_name: str = None,
 ) -> QComboBox:
-    """Create a combo box (QComboBox)"""
+    """
+    Creates a QComboBox instance with optional customization.
+
+    This function simplifies the creation of a `QComboBox` widget, allowing you 
+    to populate it with items, set its parent, dimensions, default selected index, 
+    and object name during initialization.
+
+    Parameters
+    ----------
+    - items (`list`): A list of strings to populate the combo box.
+    - parent (`any`, optional): The parent widget of the combo box. Defaults to `None`.
+    - w_h (`tuple`, optional): A tuple `(width, height)` specifying the minimum dimensions of the combo box. 
+    Defaults to `None`.
+    - index (`int`, optional): The zero-based index of the item to be selected by default. 
+    If the index is out of range, it defaults to `0`. Defaults to `0`.
+    - object_name (`str`, optional): The object name assigned to the combo box for styling or identification purposes. 
+    Defaults to `None`.
+
+    Returns
+    -------
+    - `QComboBox`: A configured `QComboBox` instance.
+    
+    Notes
+    -----
+    - If `w_h` is provided, it sets the combo box's minimum size using the values in the tuple.
+    - The `index` parameter ensures the default selected item is within the valid range of items. 
+    If the provided index is out of range (negative or greater than the number of items), it defaults to `0`.
+    - If `object_name` is provided, it assigns the name to the combo box for identification 
+    (useful for styling with QSS).
+    """
     combox = QComboBox(parent)
     combox.addItems(items)
     index = 0 if index > combox.count()-1 or index < 0 else index    
@@ -89,7 +198,31 @@ def Label(
     w_h: tuple = None, 
     object_name: str = None,
 ) -> QLabel:
-    """Create a label (QLabel)"""
+    """
+    Creates a QLabel instance with optional customization.
+
+    This function simplifies the creation of a `QLabel` widget, allowing you 
+    to set its parent, dimensions, and object name during initialization.
+
+    Parameters
+    ----------
+    - text (`str`): The text to be displayed on the label.
+    - parent (`any`, optional): The parent widget of the label. Defaults to `None`.
+    - w_h (`tuple`, optional): A tuple `(width, height)` specifying the minimum dimensions of the label. 
+    Defaults to `None`.
+    - object_name (`str`, optional): The object name assigned to the label for styling or identification purposes. 
+    Defaults to `None`.
+
+    Returns
+    -------
+    - `QLabel`: A configured `QLabel` instance.
+    
+    Notes
+    -----
+    - If `w_h` is provided, it sets the label's minimum size using the values in the tuple.
+    - If `object_name` is provided, it assigns the name to the label for identification 
+    (useful for styling with QSS).
+    """
     label = QLabel(text, parent)
     if w_h:
         label.setMinimumSize(w_h[0], w_h[1])
@@ -107,7 +240,39 @@ def LineEdit(
     input_filter: str = None,
     object_name: str = None,
 ) -> QLineEdit:
-    """Create a line edit (QLineEdit)"""
+    """
+    Creates a QLineEdit instance with optional customization.
+
+    This function simplifies the creation of a `QLineEdit` widget, allowing you 
+    to set its placeholder text, parent, dimensions, initial text, input filter, 
+    and object name during initialization.
+
+    Parameters
+    ----------
+    - placeholder (`str`): The placeholder text displayed when the line edit is empty.
+    - parent (`any`, optional): The parent widget of the line edit. Defaults to `None`.
+    - w_h (`tuple`, optional): A tuple `(width, height)` specifying the minimum dimensions of the line edit. 
+    Defaults to `None`.
+    - initial_text (`str | int`, optional): The initial text or value to display in the line edit. 
+    Converted to a string if not already. Defaults to `None`.
+    - input_filter (`str`, optional): A regular expression (`regex`) to restrict the input. 
+    Only inputs matching the `regex` are accepted. Defaults to `None`.
+    - object_name (`str`, optional): The object name assigned to the line edit for styling or identification purposes. 
+    Defaults to `None`.
+
+    Returns
+    -------
+    - `QLineEdit`: A configured `QLineEdit` instance.
+
+    Notes
+    -----
+    - If `w_h` is provided, it sets the line edit's minimum size using the values in the tuple.
+    - The `initial_text` parameter initializes the line edit with a predefined value if provided.
+    - The `input_filter` parameter uses a regular expression to validate the input. Inputs not matching 
+    the filter are not accepted.
+    - If `object_name` is provided, it assigns the name to the line edit for identification 
+    (useful for styling with QSS).
+    """
     line = QLineEdit(parent)
     line.setPlaceholderText(placeholder)
     if w_h:
@@ -135,7 +300,44 @@ def Slider(
     orientation: str = "h", 
     object_name: str = None
 ) -> QSlider:
-    """Create a slider (QSlider)"""
+    """
+    Creates a QSlider instance with optional customization.
+
+    This function simplifies the creation of a `QSlider` widget, allowing you 
+    to configure its range, step size, initial value, dimensions, orientation, 
+    and object name during initialization.
+
+    Parameters
+    ----------
+    - parent (`any`, optional): The parent widget of the slider. Defaults to `None`.
+    - v_min (`int`, optional): The minimum value of the slider's range. Defaults to `0`.
+    - v_max (`int`, optional): The maximum value of the slider's range. Defaults to `100`.
+    - step (`int`, optional): The step size for the slider. Defaults to `10`.
+    - initial_value (`int`, optional): The initial value of the slider. Defaults to `None`.
+    - w_h (`tuple`, optional): A tuple `(width, height)` specifying the minimum dimensions of the slider. 
+    Defaults to `None`.
+    - orientation (`str`, optional): The orientation of the slider. Use `"h"` for horizontal 
+    and `"v"` for vertical. Defaults to `"h"`.
+    - object_name (`str`, optional): The object name assigned to the slider for styling or identification purposes. 
+    Defaults to `None`.
+
+    Returns
+    -------
+    - `QSlider`: A configured `QSlider` instance.
+
+    Raises
+    ------
+    - `ValueError`: If an invalid orientation is provided (only `"h"` or `"v"` are allowed).
+
+    Notes
+    -----
+    - The `initial_value` parameter sets the slider's starting value, if provided.
+    - The `orientation` parameter controls whether the slider is horizontal (`"h"`) 
+    or vertical (`"v"`). An invalid orientation raises a `ValueError`.
+    - If `w_h` is provided, it sets the slider's minimum size using the values in the tuple.
+    - If `object_name` is provided, it assigns the name to the slider for identification 
+    (useful for styling with QSS).
+    """
     slider = QSlider(parent)
     slider.setRange(v_min, v_max)
     slider.setPageStep(step)
