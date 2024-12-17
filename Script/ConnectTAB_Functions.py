@@ -88,7 +88,7 @@ class ConnectTAB():
                 "<a href='https://github.com/Genymobile/scrcpy/blob/master/doc/linux.md#latest-version'>Scrcpy for Linux</a>"),
             )        
         
-    def connect_to_line_edit(self, buttons: list, line_edits: list, data: dict) -> None:
+    def connect_to_line_edit(self, buttons: list, line_edits: list, data: dict, return_connect_infos: bool = False) -> None | list:
         """
         This function prepares the `ip`/`port` to connect to the selected device using the line edits.
         
@@ -97,19 +97,23 @@ class ConnectTAB():
         - buttons (`list`): The list of non-concurrent buttons.
         - line_edits (`list`): The list of line edits `ip`/`port`.
         - data (`dict`): The data of the config file.
+        - return_connect_infos (`bool`): If the device should be connected or return the `ip`/`port`.
         """
         if path := data["Versions"]["Selected_Version"]["Path"] or not running_on_windows:
             if verify_scrcpy_path(path):
                 connect_infos = [obj.text().rstrip().lstrip() for obj in line_edits]
                 if all(connect_infos):
-                    self.connect_device(connect_infos, buttons, path)
-                    self.terminal.connect_output.connect(self.terminal.check_emits_connect)
+                    if return_connect_infos:
+                        return connect_infos
+                    else:
+                        self.connect_device(connect_infos, buttons, path)
+                        self.terminal.connect_output.connect(self.terminal.check_emits_connect)
                 else:
                     create_alert(
                         "Fill All",
-                        ("Make sure all fields are filled out " 
-                         "before you start the connection"),
-                    ) 
+                        ("Make sure all fields are filled out "
+                        "before you start the connection"),
+                    )
             else:
                 create_alert(
                     "Error in finding scrcpy",
@@ -123,6 +127,53 @@ class ConnectTAB():
                 "<a href='https://github.com/Genymobile/scrcpy/releases'>Scrcpy Releases</a> or "
                 "<a href='https://github.com/Genymobile/scrcpy/blob/master/doc/linux.md#latest-version'>Scrcpy for Linux</a>"),
             )
+            
+    def connect_wifi_debug(self, non_concurrent_buttons: list, line_edits: list, data: dict) -> None:
+        connect_infos = self.connect_to_line_edit(non_concurrent_buttons, line_edits, data, True)
+        path = data["Versions"]["Selected_Version"]["Path"]
+        accept_confirm = create_alert(
+            "Check The Filled Fields",
+            "Check if the IP and Port match Wifi Debug before proceeding",
+            "confirm",
+        )
+        if accept_confirm:
+            while True:
+                pair_code, accept_input = create_alert(
+                    "Pair Code",
+                    "Enter your Wi-Fi Debug pairing code and place it in the field below.",
+                    "input",
+                )
+                if not pair_code and accept_input:
+                    create_alert(
+                        "Pair Code Error",
+                        "Pair code cannot be empty",
+                    )
+                else:
+                    break
+            if accept_input:
+                original_text = toggle_button_state(
+                    non_concurrent_buttons,
+                    False
+                )
+                self.terminal = ConnectTAB_Thread(
+                    "wifi_connect_device",
+                    path,
+                    connect_infos[0],
+                    connect_infos[1],
+                    pair_code,
+                )
+                self.terminal.start()
+                self.terminal.wifi_connect_output.connect(
+                    self.terminal.check_emits_wifi_debug
+                )
+                self.terminal.finished.connect(
+                    partial(
+                        toggle_button_state,
+                        non_concurrent_buttons,
+                        True,
+                        original_text,
+                    )
+                )                      
     
     def save_custom_connection(self, combo_box_target: QComboBox, list_edits: list, data: dict) -> None:
         """
@@ -150,7 +201,7 @@ class ConnectTAB():
                 "IP Error",
                 "The PORT or IP entered is invalid or already exists",
             )
-        
+                      
     def delete_custom_connection(self, combo_box: QComboBox, data: dict) -> None:
         """
         This function deletes a `custom connection` saved in `data`.
@@ -221,7 +272,7 @@ class ConnectTAB():
                 "<a href='https://github.com/Genymobile/scrcpy/releases'>Scrcpy Releases</a> or "
                 "<a href='https://github.com/Genymobile/scrcpy/blob/master/doc/linux.md#latest-version'>Scrcpy for Linux</a>"),
             )
-             
+    
     def last_ip_selected(self, combo_box: QComboBox) -> None:
         """
         This function updates the `ip_index` in `Last_Session_Config`.

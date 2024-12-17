@@ -23,6 +23,7 @@ class ConnectTAB_Thread(QThread):
     connect_output = pyqtSignal(list)
     get_device_output = pyqtSignal(list)
     disconnect_output = pyqtSignal(str)
+    wifi_connect_output = pyqtSignal(str)
     
     def __init__(self, command: str, path: str, *func_args: tuple):
         super().__init__()
@@ -33,6 +34,8 @@ class ConnectTAB_Thread(QThread):
     def run(self):
         if self.command == "connect_device":
             self.connect_device()
+        elif self.command == "wifi_connect_device": 
+            self.wifi_connect_device()
         elif self.command == "get_connect_devices":
             self.get_connect_devices()
         elif self.command == "disconnect_device":
@@ -68,7 +71,29 @@ class ConnectTAB_Thread(QThread):
         
         results = [err_tcpip, out_connect] if err_tcpip else [out_tcpip, out_connect]
         self.connect_output.emit(results)   
-    
+   
+    def wifi_connect_device(self):
+        subprocess.run(
+            args=f"adb tcpip 5555",
+            shell=True,
+            cwd=self.path,
+        )
+        
+        device = subprocess.run(
+            args=f"adb pair {self.func_args[0]}:{self.func_args[1]} {self.func_args[2]}",
+            shell=True,
+            cwd=self.path,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        )
+        
+        out = device.stdout.decode("utf-8").lower().rstrip()
+        err = device.stderr.decode("utf-8").lower().rstrip()
+        if err:
+            self.wifi_connect_output.emit(err)
+        else:
+            self.wifi_connect_output.emit(out)
+        
     def get_connect_devices(self) -> list:
         """
         This function runs the `adb devices` in a `separate thread` to get the list of `devices`.
@@ -89,7 +114,6 @@ class ConnectTAB_Thread(QThread):
         for device in list_devices[1:]:
             if check_is_ip(device):
                 devices_list.append(device.split("\t")[0])
-        
         self.get_device_output.emit(devices_list)
     
     def disconnect_device(self) -> str:
@@ -149,6 +173,16 @@ class ConnectTAB_Thread(QThread):
                 "SUCCESS",
                 "Successfully connected",
             )            
+
+    @pyqtSlot(str)
+    def check_emits_wifi_debug(self, wifi_output: str) -> None:
+        error_detect = connection_errors("", wifi_output) #fazer os button off e on
+        if not error_detect:
+            create_alert(
+                "SUCCESS",
+                "Successfully connected",
+            )
+
         
     @pyqtSlot(str)
     def check_emits_disconnect(self, emit_output: str) -> None:

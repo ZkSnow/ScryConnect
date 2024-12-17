@@ -69,18 +69,25 @@ class FindDeviceW_Thread(QThread):
                 stderr=subprocess.PIPE, 
                 cwd=self.path,
             )
-            model_out = subprocess.run(
+            
+            brand = subprocess.run(
+                args=f"adb -s {device} shell getprop ro.product.brand",
+                shell=True, 
+                stdout=subprocess.PIPE, 
+                cwd=self.path,
+            ).stdout.decode("utf-8").title().rstrip()
+            
+            model = subprocess.run(
                 args=f"adb -s {device} shell getprop ro.product.model", 
                 shell=True, 
                 stdout=subprocess.PIPE, 
                 cwd=self.path,
-            )
+            ).stdout.decode("utf-8").title().rstrip()
             
-            ip = ip_out.stdout.decode("utf-8").lower().rstrip()
-            model = model_out.stdout.decode("utf-8").lower().rstrip()
             if not ip_out.stderr.decode("utf-8").lower().rstrip():
+                ip = ip_out.stdout.decode("utf-8").lower().rstrip()
                 ip = ip.split("inet ")[1].split("/")[0]
-                devices_infos[device_num] = [ip, model.title()]
+                devices_infos[device_num] = [ip, f"{brand} ({model})"]
         
         self.get_device_output.emit(devices_infos)     
                 
@@ -95,7 +102,6 @@ class FindDeviceW_Thread(QThread):
         self.old_text = toggle_button_state(
             self.func_args[3], #buttons
             False,
-            disabled_text="..."
         )
         
         out_tcp = subprocess.run(

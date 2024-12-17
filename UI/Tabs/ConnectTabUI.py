@@ -48,6 +48,7 @@ class ConnectTab(QWidget):
         self.button_delete_custom = Create.Button("Delete", self, (50, 24))
         self.button_connect_textline = Create.Button("Connect Text Line", self, (50, 24))
         self.button_disconnect = Create.Button("Disconnect", self, (50, 24))
+        self.button_wifi_debug = Create.Button("Wifi Debug", self, (50, 24))
         self.button_detect_devices = Create.Button("Detect Devices", self, (200, 24))
         
         self.DeviceL = DeviceListUI(self.userdata)
@@ -69,6 +70,7 @@ class ConnectTab(QWidget):
             self.button_delete_custom,
             self.button_connect_textline,
             self.button_disconnect,
+            self.button_wifi_debug,
             self.label_auto_connect,
             self.button_detect_devices,
         )
@@ -97,7 +99,8 @@ class ConnectTab(QWidget):
         self.non_concurrent_buttons.extend(
             [
             self.button_connect, 
-            self.button_disconnect, 
+            self.button_disconnect,
+            self.button_wifi_debug,
             self.button_connect_textline,
             self.button_detect_devices,
             ]
@@ -132,6 +135,15 @@ class ConnectTab(QWidget):
             self.button_connect_textline,
             "clicked",
             connect_tab_instance.connect_to_line_edit,
+            self.non_concurrent_buttons,
+            [self.text_ip, self.text_port],
+            self.userdata,
+        )
+        
+        connect_signal(
+            self.button_wifi_debug,
+            "clicked",
+            connect_tab_instance.connect_wifi_debug,
             self.non_concurrent_buttons,
             [self.text_ip, self.text_port],
             self.userdata,
