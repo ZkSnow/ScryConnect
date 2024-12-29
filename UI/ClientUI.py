@@ -18,11 +18,15 @@ TAB_HEIGHT = 700 #736
 
 class Client(QMainWindow):
     """
-    This class represents the `main window` and contains all the `tabs`.
-    
+    Represents the main application window containing all the tabs.
+
+    This class initializes the main window for the application, setting its 
+    properties, including size, title, and icon, and manages the user data.
+
     Parameters
     ----------
-    - userdata (`dict`): A dictionary containing the user data.
+    - userdata (`dict`): A dictionary containing the user data, which is used to 
+    initialize and manage application state.
     """
     def __init__(self, userdata: dict):
         super().__init__()
@@ -36,12 +40,22 @@ class Client(QMainWindow):
      
     def charge_theme(self, charge_theme_button: QPushButton) -> None:
         """
-        This function changes the theme of the application.
-        
+        Toggles the application theme between light and dark modes.
+
+        This function changes the application's theme based on the current theme 
+        state stored in the user data. It updates the theme's appearance, changes 
+        the button text to reflect the current theme, and saves the updated theme 
+        state to the configuration file.
+
         Parameters
         ----------
-        - charge_theme_button (`QPushButton`): The button that was clicked to change the theme.
-        
+        - charge_theme_button (`QPushButton`): The button used to toggle the theme.
+        Its text will be updated to indicate the active theme.
+
+        Notes
+        -----
+        - The dark theme is represented by a moon emoji ("\U0001f319") and the light 
+        theme by a sun emoji ("\U00002600") on the button text.
         """
         if self.userdata["Theme_Active"]:
             charge_theme_button.setText("\U0001f319")
@@ -59,7 +73,11 @@ class Client(QMainWindow):
     
     def save_scrcpy_version_if_linux(self):
         """
-        This function saves the scrcpy version in the config file if the user is on Linux.
+        Saves the scrcpy version to the configuration file on Linux systems.
+
+        This function initializes a thread to retrieve the scrcpy version and 
+        save it to the configuration file. It is specifically designed for use 
+        on Linux systems.
         """
         self.terminal = ConfigTAB_Thread(
             "get_scrcpy_version_and_save",
@@ -72,6 +90,19 @@ class Client(QMainWindow):
         self.terminal.start()
     
     def start_ui(self):
+        """
+        Initializes and configures the user interface (UI) for the main application window.
+
+        This function sets up the main window's UI, including tabs, themes, and 
+        interactive elements such as buttons. It also checks the operating system 
+        and triggers additional setup for Linux users.
+
+        UI Components
+        -------------
+        - `ConnectTab`: Manages all of Scrcpy's connection features. (e.g. connecting to Scrcpy via usb debug or wifi debug)
+        - `StartTab`: Manages all Scrcpy and UI initialization functionalities. (e.g. starting Scrcpy with specific arguments) 
+        - `ConfigTab`: Manages all Scrcpy settings or variants (e.g. by configuring the directory where Scrcpy is located) 
+        """
         if system() == "Linux":
             self.save_scrcpy_version_if_linux()
             

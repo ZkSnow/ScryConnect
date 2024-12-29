@@ -27,14 +27,18 @@ from Script.Utilities.Utils import get_current_alert_theme
 
 class DeviceSelectionUI(QDialog):
     """
-    This class represents the device selection UI.
-    
+    Represents the device selection user interface (UI).
+
+    This class provides a dialog window for selecting a device from a given list. 
+    It supports different UI types and handles scenarios with a large number of devices.
+
     Parameters
     ----------
-    - devices (`list`): A list of devices.
-    - path (`str`): The path to the selected version.
-    - ui_type (`str`): The type of UI to display.
-    - *args: Additional arguments.
+    - devices (`list`): A list of devices available for selection.
+    - path (`str`): The file path to the selected scrcpy version or related resources.
+    - ui_type (`str`): The type of UI to display, determining the behavior or style 
+    of the selection interface.
+    - *args: Additional arguments for UI types.
     """
     def __init__(self, devices: list, path: str, ui_type: str, *args):
         super().__init__()
@@ -52,6 +56,25 @@ class DeviceSelectionUI(QDialog):
         self.start_ui()
     
     def start_ui(self):
+        """
+        Initializes and configures the device selection UI.
+
+        This method sets up the UI components based on the selected `ui_type`
+        and the list of available devices. It dynamically creates device boards 
+        and organizes them in a scrollable area. Depending on the `ui_type`, 
+        additional functionality like a "Stop ALL Devices" button may be included.
+
+        Parameters
+        ----------
+        - ui_type (`str`): The type of UI to display, which determines the behavior 
+        and layout of the dialog.
+        - devices (`list`): The list of devices to be displayed in the UI.
+
+        Raises
+        ------
+        - `ValueError`: If `ui_type` is not a valid string or does not match one 
+        of the predefined options.
+        """
         if not isinstance(self.ui_type, str):
             raise ValueError("Invalid UI type, must be a string")
                 
@@ -92,6 +115,28 @@ class DeviceSelectionUI(QDialog):
         self.exec()
     
     def create_device_board(self, device_name: str) -> QGroupBox:
+        """
+        Creates a device board for displaying device information and a selection button.
+
+        This method generates a `QGroupBox` containing a label with the device name 
+        and a button to select the device. The layout and behavior vary depending 
+        on the `ui_type`.
+
+        Parameters
+        ----------
+        - device_name (`str`): The name of the device to display on the board.
+
+        Returns
+        -------
+        - `QGroupBox`: A group box widget containing the device name and a selection button.
+
+        Behavior Based on UI Type
+        --------------------------
+        - `Device Resolution`: Connects the select button to a handler for setting device resolution.
+        - `Disconnect Device`: Connects the select button to a handler for disconnecting the device.
+        - `Start Device`: Connects the select button to a handler for starting the device.
+        - `Open Shell`: Connects the select button to a general handler with the device index.
+        """
         device_board = QGroupBox()
         device_board.setFixedSize(221, 35)
         device_board.setObjectName("DeviceBoxNative")
@@ -111,7 +156,7 @@ class DeviceSelectionUI(QDialog):
             self.connect_select_button(select_button, device_name, device_board)
         elif self.ui_type == "Start Device":
             self.connect_select_button(select_button, device_name, self.device_last_index)
-        else:
+        else: # Open Shell
             self.connect_select_button(select_button, device_name, self.device_last_index)
         self.device_last_index+=1
         
@@ -119,13 +164,15 @@ class DeviceSelectionUI(QDialog):
     
     def connect_select_button(self, button, *def_arg) -> None:
         """
-        This function connects the correct function for each type of situation.
-        
+        Connects the appropriate function to the select button based on the `ui_type`.
+
+        This method determines the action to perform when the select button is clicked 
+        by checking the `ui_type` and connecting the button to the corresponding handler.
+
         Parameters
         ----------
-        
-        - button (`QPushButton`): The button to connect.
-        - *def_arg (`list`): The arguments to pass to the function.
+        - button (`QPushButton`): The button to connect the function to.
+        - *def_arg (`list`): The arguments to pass to the function when the button is clicked.
         """
         if self.ui_type == "Device Resolution":
             connect_signal(
@@ -162,11 +209,16 @@ class DeviceSelectionUI(QDialog):
 
     def charge_device_res(self, device_name: str) -> None:
         """
-        This function starts thread that will charge the resolution of the chosen device.
-        
+        Starts a thread to change the resolution of the chosen device.
+
+        This method initiates a background thread to either change the resolution of 
+        the specified device or revert it to the native resolution, depending on the 
+        `args` passed during initialization. It also displays an alert to confirm the 
+        action before proceeding.
+
         Parameters
         ----------
-        - device_name (`str`): device name.
+        - device_name (`str`): The name of the device for which the resolution will be changed.
         """
         if resolution := self.args[0]:
             alert_msg = ("You are about to change the phone's resolution " 
@@ -194,12 +246,15 @@ class DeviceSelectionUI(QDialog):
     
     def disconnect(self, device_name: str, device_board: QGroupBox) -> None:
         """
-        This function starts thread that will disconnect the `scrcpy` of the chosen device.
-        
+        Starts a thread to disconnect the `scrcpy` session for the chosen device.
+
+        This method initiates a background thread to disconnect the specified device from 
+        the `scrcpy` session. Before proceeding, a confirmation alert is shown to the user.
+
         Parameters
         ----------
-        - device_name (`str`): device name.
-        - device_board (`QGroupBox`): is the QGroupBox of the corresponding device.
+        - device_name (`str`): The name of the device to disconnect.
+        - device_board (`QGroupBox`): The `QGroupBox` widget representing the device's UI element.
         """
         if create_alert(
             "Are you sure?",
@@ -219,12 +274,16 @@ class DeviceSelectionUI(QDialog):
             
     def start_device(self, device_name: str, device_index: int) -> None:
         """
-        This function starts thread that will start the `scrcpy` of the chosen device.
-        
+        Starts a thread to initiate the `scrcpy` session for the chosen device.
+
+        This method triggers a background thread to start a `scrcpy` session for the specified device, 
+        using the arguments passed during initialization. Before starting, it disables the select button 
+        for the device to prevent multiple actions.
+
         Parameters
         ----------
-        - device_name (`str`): name of the device.
-        - device_index (`int`): index of the device.
+        - device_name (`str`): The name of the device to start the `scrcpy` session for.
+        - device_index (`int`): The index of the device in the list of available devices.
         """
         toggle_button_state(
             self.buttons[device_index],
@@ -252,7 +311,12 @@ class DeviceSelectionUI(QDialog):
 
     def stop_scrcpys(self):
         """
-        This function stops all instances of scrcpy using a `psutil` function called `process_iter`.
+        Stops all instances of `scrcpy` by terminating processes using `psutil`.
+
+        This method scans all running processes and stops any instances of `scrcpy` by identifying 
+        processes with names `scrcpy.exe` (on Windows) or `scrcpy` (on other systems). Before terminating 
+        the processes, a confirmation alert is shown to warn the user that recordings will not be saved 
+        and may become corrupted.
         """
         if create_alert(
             "Are you sure?",
@@ -271,14 +335,16 @@ class DeviceSelectionUI(QDialog):
     
     def open_device_shell(self, device_name: str, device_index: int)  -> None:
         """
-        This function will start the Thread that will open the `shell` of the chosen device.
-        
+        Starts a thread to open the shell of the chosen device.
+
+        This method triggers a background thread that opens the device's shell interface, allowing 
+        interaction with the device via command line. Before starting, it disables the corresponding 
+        button to prevent multiple actions.
+
         Parameters
         ----------
-        
-        - device_name (`str`): name of the device.
-        - device_index (`int`): index of the device.
-        
+        - device_name (`str`): The name of the device to open the shell for.
+        - device_index (`int`): The index of the device in the list of available devices.
         """
         toggle_button_state(
             self.buttons[device_index],

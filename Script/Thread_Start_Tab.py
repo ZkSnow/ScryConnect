@@ -14,13 +14,21 @@ from Script.Utilities.Auxiliary_Funcs import (
 )
 class StartTAB_Thread(QThread):
     """
-    This class is used to run the `start` commands in a `separate thread`.
-    
+    This class is used to run the `start` commands in a separate thread.
+
+    It allows executing commands related to starting processes or handling tasks in the background, 
+    without blocking the main UI thread. The results of the operations can be emitted via custom signals.
+
     Parameters
     ----------
-    - command (`str`): the command to run in the thread.
-    - path (`str`): the path to the scrcpy folder.
-    - *func_args (`tuple`): the arguments for the function.
+    - command (`str`): The command to be executed in the thread. Typically, it represents a specific action to perform.
+    - path (`str`): The path to the `scrcpy` folder. On non-Windows systems, it defaults to the current directory.
+    - *func_args (`tuple`): Additional arguments to be passed to the function executed in the thread.
+
+    Signals
+    -------
+    - `start_scrcpy_output` (`pyqtSignal(str)`): Emitted with a string containing the output of the `start` process.
+    - `get_devices_output` (`pyqtSignal(list)`): Emitted with a list of detected devices or related outputs.
     """
     # signals
     start_scrcpy_output = pyqtSignal(str)
@@ -44,11 +52,14 @@ class StartTAB_Thread(QThread):
         
     def start_scrcpy(self) -> str:
         """
-        This function runs the `scrcpy arg line` in a separate thread, to start the `scrcpy`.
-        
+        Runs the `scrcpy` command in a separate thread.
+
+        This function executes the scrcpy command line with the provided arguments in the background. 
+        It uses a subprocess to handle the execution and captures any error messages that occur during the process.
+
         Emits
         -----
-        - start_scrcpy_output (`str`) --> error message
+        - `start_scrcpy_output` (`str`): An error message emitted if the scrcpy process encounters an issue.
         """
         arg_line = self.func_args[1]
         arg_line, file_name = get_file_name(self.func_args[1], self.path)
@@ -73,11 +84,14 @@ class StartTAB_Thread(QThread):
     
     def get_connect_devices(self) -> list:
         """
-        This function runs the `adb devices` in a `separate thread` to get the list of `devices`.
-        
+        Retrieves the list of connected devices using the `adb devices` command.
+
+        This function executes the `adb devices` command in a separate thread to fetch a list of connected devices.
+        It processes the command output to extract the device identifiers and emits the resulting list.
+
         Emits
         -----
-        - get_devices_output (`list`) --> list of `devices`
+        - `get_devices_output` (`list`): A list containing the identifiers of connected devices.
         """
         list_devices = subprocess.run(
             args="adb devices", 
@@ -95,10 +109,15 @@ class StartTAB_Thread(QThread):
     
     def open_shell(self) -> None:
         """
-        This function runs the `adb shell` in a `separate thread`.
-        
-        - if the system is Windows, it runs the command in a cmd.exe using the `start cmd.exe /k`.
-        - if the system is Linux, it gets the terminal emulator and runs the command in it.
+        Opens an ADB shell session in a separate thread.
+
+        This function launches an `adb shell` command for the specified device in an appropriate terminal emulator 
+        based on the operating system.
+
+        Behavior
+        --------
+        - On Windows: Executes the command in `cmd.exe` using `start cmd.exe /k`.
+        - On Linux: Detects the terminal emulator and runs the command in it.
         """
         if system() == "Windows":
             cmd = f"start cmd.exe /k adb -s {self.func_args[0]} shell"
@@ -126,13 +145,16 @@ class StartTAB_Thread(QThread):
     @pyqtSlot(list)
     def start_shell_ui(self, device_list: list) -> None:
         """
-        This function runs the UI for choosing the `device` to open the `shell`.
-        
+        Displays a UI for selecting a device to open the `ADB shell`.
+
+        This function initializes the device selection user interface to allow the user to choose a device 
+        from the provided list for opening an ADB shell session.
+
         Parameters
         ----------
-        
-        - device_list (`list`): list of `devices`.
+        - device_list (`list`): A list of connected devices available for selection.
         """
+
         DeviceSelectionUI = self.func_args[0]
         if device_list:
             DeviceSelectionUI(device_list, self.path, "Open Shell")
@@ -145,12 +167,14 @@ class StartTAB_Thread(QThread):
     @pyqtSlot(list)
     def start_scrcpy_ui(self, device_list: list) -> None:
         """
-        This function runs the UI for choosing the `device` to start the `scrcpy`.
-        
+        Displays a UI for selecting a device to start `scrcpy`.
+
+        This function initializes the device selection user interface, allowing the user to choose a device 
+        from the provided list for starting a `scrcpy` session.
+
         Parameters
         ----------
-        
-        - device_list (`list`): list of `devices`.
+        - device_list (`list`): A list of connected devices available for selection.
         """
         client = self.func_args[4]
         DeviceSelectionUI = self.func_args[5]

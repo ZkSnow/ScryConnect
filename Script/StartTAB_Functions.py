@@ -34,17 +34,21 @@ class StartTAB():
         data: dict,
     ) -> None:
         """
-        This function is used to load a saved configuration 
-        and update the GUI elements with the corresponding values.
-        
+        Loads a saved configuration and updates the associated GUI elements.
+
+        This function retrieves a saved configuration from the provided data dictionary based on the 
+        currently selected configuration name in the source combo box. It updates the sliders, line edits, 
+        combo boxes, and checkboxes in the GUI with the saved values. If no configuration is selected, 
+        an alert is displayed.
+
         Parameters
         ----------
         - combo_box_source (`QComboBox`): The combo box containing the list of saved configurations.
-        - checks (`list`): A list of check boxes.
-        - line_edits (`list`): A list of line edits.
-        - combo_boxs (`list`): A list of combo boxes.
-        - sliders (`list`): A list of sliders.
-        - data (`dict`): A dictionary containing the saved data.
+        - checks (`list`): A list of QCheckBox widgets to be updated with the saved configuration state.
+        - line_edits (`list`): A list of QLineEdit widgets to be updated with the saved text values.
+        - combo_boxs (`list`): A list of QComboBox widgets to be updated with the saved index values.
+        - sliders (`list`): A list of QSlider widgets to be updated with the saved slider positions.
+        - data (`dict`): A dictionary containing the saved configuration data.
         """
         config_name = combo_box_source.currentText() if combo_box_source else "StartTAB"
         if config_name:
@@ -80,16 +84,21 @@ class StartTAB():
         data: dict,
     ) -> None:        
         """
-        This function is used to save a custom start configuration.
-        
+        Saves a custom start configuration and updates the configuration data.
+
+        This function allows the user to save the current state of GUI elements (sliders, line edits, 
+        combo boxes, and checkboxes) as a named configuration. The configuration is stored in the 
+        provided data dictionary, added to the target combo box, and saved to a data file. If the 
+        provided name is invalid or already exists, an alert is displayed.
+
         Parameters
         ----------
-        - combo_box_target (`QComboBox`): The combo box containing the list of saved configurations.
-        - checks (`list`): A list of check boxes.
-        - line_edits (`list`): A list of line edit widgets.
-        - combo_boxs (`list`): A list of combo box widgets.
-        - sliders (`list`): A list of slider widgets.
-        - data (`dict`): A dictionary containing the saved data.
+        - combo_box_target (`QComboBox`): The combo box where the new configuration name will be added.
+        - checks (`list`): A list of QCheckBox widgets to save the current checked states.
+        - line_edits (`list`): A list of QLineEdit widgets to save the current text values.
+        - combo_boxs (`list`): A list of QComboBox widgets to save the current selected indices.
+        - sliders (`list`): A list of QSlider widgets to save the current slider positions.
+        - data (`dict`): A dictionary where the new configuration will be stored.
         """
         config_name, accept_input = create_alert(
             "Type a Name", 
@@ -135,13 +144,18 @@ class StartTAB():
 
     def delete_saved_config(self, combo_box: QComboBox, data: dict) -> None: 
         """
-        This function is used to delete a saved start configuration.
-        
+        Deletes a saved start configuration from the configuration data.
+
+        This function removes a selected configuration from the combo box and the associated 
+        data dictionary. The deletion is confirmed with the user before proceeding. If no 
+        configuration is selected, an alert is displayed.
+
         Parameters
         ----------
         - combo_box (`QComboBox`): The combo box containing the list of saved configurations.
-        - data (`dict`): A dictionary containing the saved data.
+        - data (`dict`): A dictionary storing the saved configurations.
         """
+
         if config_name := combo_box.currentText():
             if create_alert(
                 "Are you sure?",
@@ -169,17 +183,24 @@ class StartTAB():
         client: QMainWindow = None,
     ) -> None:
         """
-        This function is used to run scrcpy with the specified arguments.
-        If there is no ui_arg_line, it will use manual_arg_line (custom line for editing args).
-        
+        Runs scrcpy with the specified arguments and configuration.
+
+        This function starts scrcpy using either manually provided arguments or UI-generated arguments. 
+        It validates the arguments, ensures the required scrcpy path exists, and manages the execution 
+        through a separate thread. Alerts are displayed for any validation or path-related errors.
+
         Parameters
         ----------
-        - data (`dict`): A dictionary containing the saved data.
-        - manual_arg_line (`str`): The manual arguments line.
-        - ui_arg_line (`str`): The ui arguments line.
-        - client (`QMainWindow`, `optional`): The client window.
+        - data (`dict`): A dictionary containing saved configurations, including the selected scrcpy version and paths.
+        - manual_arg_line (`str`): A string containing manually entered arguments for scrcpy. Takes precedence over `ui_arg_line`.
+        - ui_arg_line (`str`): A string containing arguments generated by the UI.
+        - client (`QMainWindow`, optional): The main client window, which can be hidden during scrcpy execution.
+
+        Raises
+        ------
+        - `ValueError`: If the `-m` or `--max-size` argument has a value below 500, causing potential errors.
+        - `FileNotFoundError`: If the scrcpy or adb executables are missing in the selected version folder.
         """
-             
         arg_line = manual_arg_line.text().lower() if manual_arg_line else ui_arg_line
         if valid_maxsize_value(arg_line):
             if path := data["Versions"]["Selected_Version"]["Path"] or not running_on_windows:
@@ -223,12 +244,15 @@ class StartTAB():
         
     def line_arg_start_scrcpy(self, line_edit: QLineEdit, data: dict) -> None:
         """
-        This function is used to run scrcpy custom line args (line edit).
-        
+        Runs scrcpy with custom arguments entered in a line edit widget.
+
+        This function retrieves the argument line from the provided `QLineEdit` widget and passes it 
+        to the `run_scrcpy` function to execute scrcpy with the specified custom arguments.
+
         Parameters
         ----------
-        - line_edit (`QLineEdit`): The line edit widget to get the arg line from.
-        - Data (`dict`): A dictionary containing the saved configuration data.
+        - line_edit (`QLineEdit`): The QLineEdit widget containing the custom argument line.
+        - data (`dict`): A dictionary containing saved configuration data, used to retrieve version paths and other settings.
         """
         self.run_scrcpy(data, manual_arg_line=line_edit)
     
@@ -242,17 +266,23 @@ class StartTAB():
         client: QMainWindow = None,
     ) -> None:
         """
-        This function is used to execute scrcpy with the arguments specified by ui.
-        
+        Executes scrcpy with the arguments specified by the UI elements.
+
+        This function constructs a command line from various UI elements, including sliders, checkboxes, 
+        combo boxes, and line edits. It then passes the constructed arguments to the `run_scrcpy` function 
+        to start scrcpy with the specified configuration. If the selected scrcpy version is below 2.0, 
+        an alert is displayed indicating that some features may not work.
+
         Parameters
         ----------
-        - Sliders (`list`): A list of slider widgets.
-        - Check_Boxes (`list`): A list of check box widgets.
-        - Combo_Boxs (`list`): A list of combo box widgets.
-        - Line_Edits (`list`): A list of line edit widgets.
-        - Data (`dict`): A dictionary containing the saved configuration data.
-        - Client (`QMainWindow`, `optional`): The client object. Defaults to None.
+        - sliders (`list`): A list of QSlider widgets containing values for scrcpy options.
+        - check_boxes (`list`): A list of QCheckBox widgets specifying additional arguments for scrcpy.
+        - combo_boxs (`list`): A list of QComboBox widgets containing choices for scrcpy options.
+        - line_edits (`list`): A list of QLineEdit widgets for custom arguments.
+        - data (`dict`): A dictionary containing saved configuration data, including the selected scrcpy version.
+        - client (`QMainWindow`, optional): The main client window, which can be hidden during scrcpy execution.
         """
+
         #Get all args ↓ ------------------
         args_w_required_values = [
             "display buffer",
@@ -298,19 +328,20 @@ class StartTAB():
         slider: QSlider, 
         line_edit_value: QLineEdit, 
         index: int, 
-        data: dict,
     ) -> None:
         """
-        This function updates the `data file` with the value of the `slider` and the `line edit`.  
-        The line edit values used are those representing the slider values.
-        
+        Updates the data file with the current value of a slider and its corresponding line edit.
+
+        This function retrieves the current value from the provided `QSlider` widget, updates the 
+        associated `QLineEdit` widget with the new value, and stores the value in the data file for 
+        persistence. The index specifies the position of the slider in the data file structure.
+
         Parameters
         ----------
-        - slider (`QSlider`): The slider widget to get the value from.
-        - line_edit_value (`QLineEdit`): The line edit widget to update with the new value.
-        - index (`int`): The index of the slider in the `data file`.
-        - data (`dict`): The data dictionary to update.
-        """      
+        - slider (`QSlider`): The QSlider widget from which the value is retrieved.
+        - line_edit_value (`QLineEdit`): The QLineEdit widget to update with the slider's value.
+        - index (`int`): The index of the slider in the data file, used to store the value.
+        """
         new_value = slider.value()
         line_edit_value.setText(str(new_value))
         update_data_file(
@@ -320,13 +351,16 @@ class StartTAB():
 
     def value_edit_charge_event(self, line_edit: QLineEdit, target_slider: QSlider) -> None:
         """
-        This function updates the `data file` with the value of the `line edit`
-        The line edits values used are those representing the slider values.
-        
+        Updates a slider based on the value entered in a line edit widget.
+
+        This function retrieves the value from the provided `QLineEdit` widget, converts it to an integer, 
+        and updates the associated `QSlider` widget with the new value. The value is clamped to the slider's 
+        minimum and maximum range before being set.
+
         Parameters
         ----------
-        - line_edit (`QLineEdit`): The line edit widget to get the value from.
-        - target_slider (`QSlider`): The slider widget to update with the new value.
+        - line_edit (`QLineEdit`): The QLineEdit widget from which the value is retrieved.
+        - target_slider (`QSlider`): The QSlider widget to update with the new value.
         """
         min_value = target_slider.minimum()
         max_value = target_slider.maximum()
@@ -341,12 +375,16 @@ class StartTAB():
     
     def last_index(self, combo_box: QComboBox, index: int) -> None:
         """
-        This function updates the `data file` with the index of the `combo box`.
-        
+        Updates the data file with the current index of a combo box.
+
+        This function retrieves the current index from the provided `QComboBox` widget and stores it 
+        in the data file at the specified index position. This allows the selected combo box option to 
+        persist across sessions.
+
         Parameters
         ----------
-        - combo_box (`QComboBox`): The combo box widget to get the index from.
-        - index (`int`): The index of the combo box in the `data file`.
+        - combo_box (`QComboBox`): The QComboBox widget from which the current index is retrieved.
+        - index (`int`): The index of the combo box in the data file, used to store the value.
         """
         update_data_file(
             combo_box.currentIndex(),
@@ -355,12 +393,15 @@ class StartTAB():
     
     def last_texts(self, line_edit: QLineEdit, index: int) -> None:
         """
-        This function updates the `data file` with the text of the `line edit`.
-        
+        Updates the data file with the text from a line edit widget.
+
+        This function retrieves the current text from the provided `QLineEdit` widget and stores it 
+        in the data file at the specified index position. This allows the entered text to persist across sessions.
+
         Parameters
         ----------
-        - line_edit (`QLineEdit`): The line edit widget to get the text from.
-        - index (`int`): The index of the line edit in the `data file`.
+        - line_edit (`QLineEdit`): The QLineEdit widget from which the text is retrieved.
+        - index (`int`): The index of the line edit in the data file, used to store the value.
         """
         update_data_file(
             line_edit.text(),
@@ -369,12 +410,16 @@ class StartTAB():
         
     def last_check_selected(self, index: int, data: dict) -> None:
         """
-        This function updates the `data file` with the selected state of the `check box`.
-        
+        Updates the data file with the selected state of a checkbox.
+
+        This function toggles the state of the checkbox at the specified index and stores the new state 
+        in the data file. The state is stored as a boolean value, representing whether the checkbox is 
+        checked or unchecked.
+
         Parameters
         ----------
-        - Index (`int`): The index of the check box in the `data file`.
-        - Data (`dict`): The dictionary containing the data.
+        - index (`int`): The index of the checkbox in the data file, used to store the state.
+        - data (`dict`): The dictionary containing the saved configuration data, including checkbox states.
         """
         last_check_value = data["Check_Boxes"][index] = not data["Check_Boxes"][index]
         update_data_file(
@@ -382,16 +427,30 @@ class StartTAB():
             ["Last_Session_Config", "StartTAB", "Check_Boxes", index],
         )
     
-    def back_to_default_config(self, checks, line_edits, combo_boxs, sliders) -> None:
+    def back_to_default_config(
+        self, 
+        checks: list, 
+        line_edits: list, 
+        combo_boxs: list, 
+        sliders: list
+    ) -> None:
         """
-        This function loads the default config in the UI.
-        
+        Loads the default configuration into the UI elements.
+
+        This function resets the UI elements (checkboxes, line edits, combo boxes, and sliders) 
+        to their default values by loading the default configuration data from the saved configuration.
+
         Parameters
         ----------
-        - checks (`list`): The list of check boxes.
-        - line_edits (`list`): The list of line edits.
-        - combo_boxs (`list`): The list of combo boxes.
-        - sliders (`list`): The list of sliders.
+        - checks (`list`): A list of QCheckBox widgets to be updated with the default configuration values.
+        - line_edits (`list`): A list of QLineEdit widgets to be updated with the default configuration texts.
+        - combo_boxs (`list`): A list of QComboBox widgets to be updated with the default selection.
+        - sliders (`list`): A list of QSlider widgets to be updated with the default values.
+
+        Notes
+        -----
+        - The function uses the `load_saved_config` method to load the default configuration data from the 
+        `USERDATA["Last_Session_Config"]`.
         """
         self.load_saved_config(
             None,
@@ -404,11 +463,15 @@ class StartTAB():
         
     def open_shell(self, data):
         """
-        This function opens a new terminal window with the `adb shell` command.
-        
+        Opens a new terminal window to run the `adb shell` command.
+
+        This function attempts to open a new terminal window that connects to the device using `adb shell` 
+        by first verifying the `scrcpy` installation path. If the path is valid and the device is connected,
+        it opens the terminal for interaction.
+
         Parameters
         ----------
-        - data (`dict`): A dictionary containing the saved data.
+        - data (`dict`): A dictionary containing the saved configuration data, including the selected scrcpy version.
         """
         if path := data["Versions"]["Selected_Version"]["Path"] or not running_on_windows:
             if verify_scrcpy_path(path):

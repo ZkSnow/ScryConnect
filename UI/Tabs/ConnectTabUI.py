@@ -9,13 +9,22 @@ from Script.Utilities.Auxiliary_Funcs import assemble_grid_layout, get_datas_for
 
 class ConnectTab(QWidget):
     """
-    This class is used to create the `Connect Tab` UI.
-    
+    Represents the connection tab UI in the application.
+
+    This class is responsible for creating and managing the user interface (UI) elements 
+    within the "Connect" tab. It provides functionality for setting up the configuration data, 
+    handling user inputs, and interacting with other components of the application such as 
+    buttons and the main window. The `ConnectTab` is added to a `QTabWidget` to make it a part 
+    of the main application's tab-based interface.
+
     Parameters
     ----------
-    - userdata (`dict`): the user data.
-    - nconc_btns (`list`): the list of the non-concurrent buttons.
-    - tabs (`QTabWidget`): the tab widget.
+    - userdata (`dict`): The dictionary containing user-specific data, which is used 
+    to populate the connection fields.
+    - nconc_btns (`list`): A list of buttons that are non-concurrent, i.e., buttons that 
+    should not be pressed simultaneously, which are toggled during various actions.
+    - tabs (`QTabWidget`): The `QTabWidget` that holds all the tabs in the application, to which 
+    this connection tab will be added.
     """
     def __init__(self, userdata: dict, nconc_btns: list, tabs: QTabWidget):
         super().__init__()
@@ -29,7 +38,12 @@ class ConnectTab(QWidget):
 
     def create_elements(self):
         """
-        This function `creates` all the elements of the `Connect Tab`.
+        Creates and initializes all the UI elements for the `Connect Tab`.
+
+        This method is responsible for setting up the widgets and controls that will be displayed 
+        in the "Connect" tab. These include labels, combo boxes, line edits, and buttons, which 
+        allow the user to configure various aspects of the application. The method also retrieves 
+        necessary data for populating these elements from the `userdata` dictionary.
         """
         ips, last_ip_index, last_texts, auto_port = get_datas_for_ui(self.userdata, "connect")
         
@@ -55,9 +69,14 @@ class ConnectTab(QWidget):
         
     def assemble_elements(self):
         """
-        This function `assembles` all the elements into a `grid layout`.
+        Assembles all the UI elements into a grid layout for the `Connect Tab`.
+
+        This method arranges and organizes the previously created UI elements into a layout 
+        structure. It splits the UI into an upper and lower section, each containing related 
+        widgets. The elements are then added to the layout using grid-based positioning. 
+        Additionally, spacers are inserted at specific positions to improve the overall layout 
+        structure.
         """
-        
         upper_layout = assemble_grid_layout(
             "connect_tab",
             "upper",
@@ -94,7 +113,20 @@ class ConnectTab(QWidget):
         
     def connect_functions_elements(self):
         """
-        This function `connects` the functions to the `elements`.
+        Connects the UI elements to their respective functions in the `ConnectTAB`.
+
+        This method establishes the necessary signal-slot connections for the UI elements in the 
+        `ConnectTAB` to ensure user interactions trigger the appropriate actions. Signals (such as 
+        `textChanged` and `clicked`) are connected to the corresponding functions that handle these 
+        events.
+
+        The method also extends the `non_concurrent_buttons` list with specific buttons that should 
+        be handled separately in the layout.
+
+        Notes
+        -----
+        - This method relies on the `connect_signal` utility function to connect the UI elements' 
+        signals to the appropriate functions.
         """
         self.non_concurrent_buttons.extend(
             [

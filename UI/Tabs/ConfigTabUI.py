@@ -15,14 +15,24 @@ from Script.Utilities.Auxiliary_Funcs import assemble_grid_layout, get_datas_for
 
 class ConfigTab(QWidget):
     """
-    This class is used to create the `Config Tab` UI.
-    
+    Represents the configuration tab UI in the application.
+
+    This class is responsible for creating and managing the user interface (UI) elements 
+    within the "Config" tab. It provides functionality for setting up the configuration data, 
+    handling user inputs, and interacting with other components of the application such as 
+    buttons and the main window. The `ConfigTab` is added to a `QTabWidget` to make it a part 
+    of the main application's tab-based interface.
+
     Parameters
     ----------
-    - userdata (`dict`): the user data.
-    - nconc_btns (`list`): the list of the non-concurrent buttons.
-    - client (`QMainWindow`): the main window of the application.
-    - tabs (`QTabWidget`): the tab widget that contains all the tabs.
+    - userdata (`dict`): The dictionary containing user-specific data, which is used 
+    to populate the configuration fields.
+    - nconc_btns (`list`): A list of buttons that are non-concurrent, i.e., buttons that 
+    should not be pressed simultaneously, which are toggled during various actions.
+    - client (`QMainWindow`): The main window of the application, which serves as the container 
+    for all tabs, including this configuration tab.
+    - tabs (`QTabWidget`): The `QTabWidget` that holds all the tabs in the application, to which 
+    this configuration tab will be added.
     """
     def __init__(self, userdata: dict, nconc_btns: list, client: QMainWindow, tabs: QTabWidget):
         super().__init__()
@@ -37,7 +47,12 @@ class ConfigTab(QWidget):
         
     def create_elements(self):
         """
-        This function `creates` all the elements of the `Config Tab`.
+        Creates and initializes all the UI elements for the `Config Tab`.
+
+        This method is responsible for setting up the widgets and controls that will be displayed 
+        in the "Config" tab. These include labels, combo boxes, line edits, and buttons, which 
+        allow the user to configure various aspects of the application. The method also retrieves 
+        necessary data for populating these elements from the `userdata` dictionary.
         """
         selected_version, versions, resolution, path_mode, last_path_file,\
         directory_name, combox_index = get_datas_for_ui(self.userdata, "config")
@@ -73,7 +88,13 @@ class ConfigTab(QWidget):
         
     def assemble_elements(self):
         """
-        This function `assembles` all the elements into a `grid layout`.
+        Assembles all the UI elements into a grid layout for the `Config Tab`.
+
+        This method arranges and organizes the previously created UI elements into a layout 
+        structure. It splits the UI into an upper and lower section, each containing related 
+        widgets. The elements are then added to the layout using grid-based positioning. 
+        Additionally, spacers are inserted at specific positions to improve the overall layout 
+        structure.
         """
         upper_layout = assemble_grid_layout(
             "config_tab",
@@ -124,7 +145,20 @@ class ConfigTab(QWidget):
         
     def connect_functions_elements(self):
         """
-        This function `connects` the functions to the `elements`.
+        Connects the UI elements with their corresponding functions in the `ConfigTab`.
+
+        This method establishes the necessary signal-slot connections for the UI elements in the 
+        `ConfigTab` to ensure that user interactions trigger the appropriate actions. The method 
+        connects various signals (such as `currentIndexChanged` and `clicked`) to the relevant 
+        functions responsible for handling these events.
+
+        The method also extends the `non_concurrent_buttons` list with specific buttons that should 
+        be handled separately in the layout.
+
+        Notes
+        -----
+        - This method relies on the `connect_signal` utility function to connect the UI elements' 
+        signals to the appropriate functions.
         """
         self.non_concurrent_buttons.extend(
             [

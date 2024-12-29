@@ -17,14 +17,24 @@ from Script.Utilities.Auxiliary_Funcs import assemble_grid_layout, get_datas_for
 
 class StartTab(QWidget):
     """
-    This class is used to create the UI for the Start Tab.
-    
+    Represents the start tab UI in the application.
+
+    This class is responsible for creating and managing the user interface (UI) elements 
+    within the "start" tab. It provides functionality for setting up the configuration data, 
+    handling user inputs, and interacting with other components of the application such as 
+    buttons and the main window. The `StartTab` is added to a `QTabWidget` to make it a part 
+    of the main application's tab-based interface.
+
     Parameters
     ----------
-    - userdata (`dict`): The UserData, where all values will be saved for later access.
-    - nconc_btns (`list`): List with all non concurrent buttons {`QPushButton`}.
-    - client (`QMainWindow`): The main window of the application.
-    - tabs (`QTabWidget`): The tab widget that contains all the tabs.
+    - userdata (`dict`): The dictionary containing user-specific data, which is used 
+    to populate the start fields.
+    - nconc_btns (`list`): A list of buttons that are non-concurrent, i.e., buttons that 
+    should not be pressed simultaneously, which are toggled during various actions.
+    - client (`QMainWindow`): The main window of the application, which serves as the container 
+    for all tabs, including this start tab.
+    - tabs (`QTabWidget`): The `QTabWidget` that holds all the tabs in the application, to which 
+    this start tab will be added.
     """
     def __init__(self, userdata: dict, nconc_btns: list, client: QMainWindow, tabs: QTabWidget):
         super().__init__()
@@ -39,7 +49,12 @@ class StartTab(QWidget):
     
     def create_elements(self):
         """
-        This function `creates` all the elements of the `Start Tab`.
+        Creates and initializes all the UI elements for the `Start Tab`.
+
+        This method is responsible for setting up the widgets and controls that will be displayed 
+        in the "Start" tab. These include labels, combo boxes, line edits, and buttons, which 
+        allow the user to configure various aspects of the application. The method also retrieves 
+        necessary data for populating these elements from the `userdata` dictionary.
         """
         config_templates, last_checks, index_combo, last_texts,\
         slider_values = get_datas_for_ui(self.userdata, "start")
@@ -156,7 +171,13 @@ class StartTab(QWidget):
         
     def assemble_elements(self):
         """
-        This function `assembles` all the elements into a `grid layout`.
+        Assembles all the UI elements into a grid layout for the `Start Tab`.
+
+        This method arranges and organizes the previously created UI elements into a layout 
+        structure. It splits the UI into an upper, middle and lower section, each containing related 
+        widgets. The elements are then added to the layout using grid-based positioning. 
+        Additionally, spacers are inserted at specific positions to improve the overall layout 
+        structure.
         """
         upper_layout = assemble_grid_layout(
             "start_tab",
@@ -258,7 +279,20 @@ class StartTab(QWidget):
         
     def connect_functions_elements(self):
         """
-        This function `connects` the functions to the `elements`.
+        Connects the UI elements to their respective functions in the `StartTAB`.
+
+        This method establishes the necessary signal-slot connections for the UI elements in the 
+        `StartTAB`. It connects various signals (such as `textChanged`, `stateChanged`, 
+        and `currentIndexChanged`) to their corresponding handling functions. This ensures that 
+        the UI reacts to user input and interacts with the underlying logic appropriately.
+
+        The method also extends the `non_concurrent_buttons` list with specific buttons that should 
+        be handled separately in the layout.
+
+        Notes
+        -----
+        - This method relies on the `connect_signal` utility function to connect the UI elements' 
+        signals to the appropriate functions.
         """
         self.non_concurrent_buttons.extend(
             [   

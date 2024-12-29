@@ -10,18 +10,26 @@ from Script.Utilities.Auxiliary_Funcs import connection_errors
  
 class FindDeviceW_Thread(QThread):
     """
-    This class is used to run the `FindDevice` commands in a `separate thread`.
-    
+    This class is used to run the `FindDevice` commands in a separate thread.
+
+    It allows executing commands related to device discovery and handling in the background, 
+    without blocking the main UI thread. The output of the command can be emitted via custom signals.
+
     Parameters
     ----------
-    - command (`str`): the command to run in the thread.
-    - path (`str`): the path to the scrcpy folder.
-    - *func_args (`tuple`): the arguments for the function.
+    - command (`str`): The command to run in the thread, typically related to device discovery or management.
+    - path (`str`): The path to the `scrcpy` folder. On non-Windows systems, the path is set to the current directory.
+    - *func_args (`tuple`): Additional arguments to be passed to the function that the thread is running.
+
+    Signals
+    -------
+    - `get_device_output` (`pyqtSignal(dict)`): Emitted with a dictionary containing the output of the device discovery process.
+    - `output_connect` (`pyqtSignal(list)`): Emitted with a list of outputs to be processed further.
+    - `disconnect_output` (`pyqtSignal(str)`): Emitted with a message indicating the result of the disconnection attempt.
     """
     # signals
     get_device_output = pyqtSignal(dict)
     output_connect = pyqtSignal(list)
-    disconnect_output = pyqtSignal(str)
     
     def __init__(self, command: str, path: str, *func_args: tuple):
         super().__init__()
@@ -41,11 +49,21 @@ class FindDeviceW_Thread(QThread):
             
     def get_devices_infos(self) -> dict:
         """
-        This function runs `commands` to get the `list of devices` and their infos (`ip`, `model`).
-        
+        Runs commands to retrieve the list of connected devices and their information (IP address, model, and brand).
+
+        This function uses `adb` commands to gather information about each connected device. It retrieves the device 
+        serial numbers, their IP addresses, and the device brand and model. The information is then compiled into a dictionary 
+        and emitted via a signal.
+
+        Returns
+        -------
+        - `dict`: A dictionary where each key is a device index (device number), and the value is a list containing:
+            - IP address (`str`): The IP address of the device.
+            - Model and brand (`str`): The model and brand of the device in the format "Brand (Model)".
+
         Emits
-        -----
-        - get_device_output (`dict`): dictionary of `devices infos`
+        ------
+        - `get_device_output` (`pyqtSignal(dict)`): Emitted with a dictionary containing device information.
         """
         #get device serials ↓
         lists_serials = subprocess.run(
@@ -93,11 +111,17 @@ class FindDeviceW_Thread(QThread):
                 
     def connect_device(self) -> list:
         """
-        This function runs the `adb tcpip` and `adb connect` in a `separate thread`.
-        
+        Runs the `adb tcpip` and `adb connect` commands in a separate thread to establish a TCP/IP connection to a device.
+
+        This function initiates a connection to a device over TCP/IP by first using `adb tcpip <device_port>` to enable 
+        TCP/IP mode, followed by `adb connect <device_ip>` to establish the connection. The results of these commands 
+        are then captured and emitted.
+
         Emits
-        -----
-        - `connect_output` (`list`): the output of the `adb connect` command. [error, output]
+        ------
+        - `connect_output` (`pyqtSignal(list)`): A list containing two elements:
+            - The first element is either an error message (if any occurred) from the `adb tcpip` command or its output.
+            - The second element is the output message from the `adb connect` command.
         """
         self.old_text = toggle_button_state(
             self.func_args[3], #buttons
@@ -132,15 +156,14 @@ class FindDeviceW_Thread(QThread):
         
         Parameters
         ----------
-        - emits_devices (`dict`): dictionary of `devices infos` 
-          provided by `get_devices_infos` function.
+        - emits_devices (`dict`): dictionary of `devices infos` provided by `get_devices_infos` function.
         """
         if emits_devices:
             for device in emits_devices.values():
                 device_ip = device[0]
                 device_name = device[1]
                 DeviceListUi = self.func_args[2]
-                if device_ip not in DeviceListUi.detected_devices: 
+                if device_ip not in DeviceListUi.detected_devices:
                     DeviceListUi.add_board(device_name, device_ip)
                     DeviceListUi.detected_devices.append(device_ip)
                 

@@ -27,11 +27,15 @@ class ConfigTAB():
     
     def new_version(self, line_edit: QLineEdit) -> None:
         """
-        This function allows the user to choose the `scrcpy folder`.
-        
+        Opens a directory selection dialog and sets the scrcpy folder path in the specified QLineEdit.
+
+        This function allows the user to select the `scrcpy` folder path through a directory selection dialog. 
+        The chosen path is displayed in the provided `QLineEdit` widget. This feature is currently supported 
+        only on Windows operating systems. On unsupported OS, an alert dialog is shown to notify the user.
+
         Parameters
         ----------
-        - line_edit (`QLineEdit`): The line edit where the scrcpy address will be placed.
+        - line_edit (`QLineEdit`): The QLineEdit widget where the selected `scrcpy` folder path will be displayed.
         """
         if running_on_windows:
             Directory = QFileDialog.getExistingDirectory(None, "Select Scrcpy Folder")
@@ -44,13 +48,27 @@ class ConfigTAB():
     
     def save_scrcpy_version(self, line_edit: QLineEdit, combo_box_target: QComboBox, data: dict) -> None:
         """
-        This function allows the user to save the scrcpy version in the config file.
-        
+        Saves the scrcpy version in the configuration file and updates the target combo box.
+
+        This function allows the user to save a scrcpy version by selecting its path, assigning it a 
+        custom name, and storing it in the configuration data. If the path and version name are valid, 
+        the name is added to the specified combo box and saved in the configuration file. This functionality 
+        is currently supported only on Windows. For unsupported operating systems, an alert is displayed.
+
         Parameters
         ----------
-        - line_edit (`QLineEdit`): The line edit with the address of the scrcpy.
-        - combo_box_target (`QComboBox`): The combo box where the name will be added.
-        - data (`dict`): The data dictionary.      
+        - line_edit (`QLineEdit`): The QLineEdit widget containing the scrcpy folder path.
+        - combo_box_target (`QComboBox`): The QComboBox widget where the version name will be added if valid.
+        - data (`dict`): A dictionary containing configuration data, including saved versions.
+
+        Raises
+        ------
+        - `TypeError`: If the scrcpy path is not a string.
+
+        Notes
+        -----
+        - This function checks if the scrcpy folder exists and verifies its contents to ensure both 
+        `scrcpy` and `adb` are properly installed.
         """
         if running_on_windows:
             path = line_edit.text().rstrip().lstrip()
@@ -101,12 +119,18 @@ class ConfigTAB():
             
     def delete_scrcpy_version(self, combo_box: QComboBox, data: dict) -> None:
         """
-        This function is used to delete a `scrcpy version`.
-        
+        Deletes a scrcpy version from the configuration file and updates the combo box.
+
+        This function removes the currently selected scrcpy version from the configuration data and updates 
+        the associated combo box. If a version is selected and the user confirms the deletion, it is removed 
+        from both the combo box and the saved configuration. The selected version is updated accordingly, 
+        or reset if no other versions remain. This functionality is only supported on Windows; unsupported 
+        operating systems will prompt an alert.
+
         Parameters
         ----------
-        - combo_box (`QComboBox`): the combo box with the name of the version.
-        - data (`dict`): The data dictionary.
+        - combo_box (`QComboBox`): The QComboBox widget containing the list of saved scrcpy versions.
+        - data (`dict`): A dictionary containing configuration data, including saved and selected versions.
         """
         if running_on_windows:
             if (old_version := combo_box.currentText()) in data["Saved_Versions"].keys():
@@ -146,12 +170,17 @@ class ConfigTAB():
     
     def charge_device_resolution(self, data: str, combo_box: QComboBox) -> None:
         """
-        This function is used to charge the resolution of the device.
-        
+        Configures the device resolution and starts the resolution adjustment process.
+
+        This function retrieves the selected resolution from a combo box and applies it to the selected 
+        device through the ADB SHELL. It validates the scrcpy path and checks the resolution, initiating 
+        the process if all conditions are met. If no resolution or scrcpy version is selected, the user 
+        is notified via an alert dialog.
+
         Parameters
         ----------
-        - data (`dict`): A dictionary containing the user data.
-        - combo_box (`QComboBox`): The resolution combo box widget.
+        - data (`dict`): A dictionary containing user data, including saved resolutions and selected scrcpy version.
+        - combo_box (`QComboBox`): The combo box widget from which the desired resolution is selected.
         """
         if combo_box != None:
             if resolution := combo_box.currentText().rstrip().lstrip():
@@ -196,12 +225,17 @@ class ConfigTAB():
     
     def new_custom_resolution(self, combo_box_target: QComboBox, data: dict) -> None:
         """
-        This function allows the user to add `custom resolutions` to the config file.
-        
+        Adds a custom resolution to the configuration file and updates the combo box.
+
+        This function allows the user to define a custom resolution by providing width and height values. 
+        The resolution is validated to ensure it consists of positive integers less than 8 digits. If valid 
+        and not already existing in the configuration, it is added to the combo box and saved to the 
+        configuration file.
+
         Parameters
         ----------
-        combo_box_target (`QComboBox`): The combo box where the new resolution will be added.
-        data (`dict`): The data dictionary.
+        - combo_box_target (`QComboBox`): The combo box widget where the new resolution will be displayed and selectable.
+        - data (`dict`): A dictionary containing the configuration data, including saved resolutions.
         """
         width, confirm_width = create_alert(
                 "Width", 
@@ -242,12 +276,18 @@ class ConfigTAB():
                                  
     def delete_custom_resolution(self, combo_box: QComboBox, saved_resolution: dict) -> None:
         """
-        This function deletes a custom resolution from the `combo box`.
-        
+        Deletes a custom resolution from the combo box and the saved resolutions dictionary.
+
+        This function removes the currently selected resolution from a combo box and deletes it 
+        from the saved resolutions in the configuration file. The user is prompted to confirm 
+        the deletion before proceeding. If no resolution is selected or the resolution is not 
+        found in the saved resolutions, the user is notified via an alert dialog.
+
         Parameters
         ----------
-        - combo_box (`QComboBox`): The combo box to delete the resolution from.
-        - saved_resolution (`dict`): The saved resolution dictionary.
+        - combo_box (`QComboBox`): The combo box widget containing the list of resolutions, from which the selected resolution will be deleted.
+        - saved_resolution (`dict`): A dictionary containing saved custom resolutions, where the key is the resolution name (e.g., `"1920x1080"`) 
+        and the value is the resolution size as a list [x, y] (e.g., `[1920, 1080]`).
         """
         if (current_text := combo_box.currentText()) in saved_resolution:
             if create_alert(
@@ -272,13 +312,18 @@ class ConfigTAB():
   
     def save_file_path(self, line_edit: QLineEdit, combo_box_target: QComboBox, data: dict) -> None:
         """
-        This function saves the file path to the `config file`.
-        
+        Saves a file path to the configuration file and updates the combo box.
+
+        This function allows the user to save a file path by specifying a custom name. The file path is 
+        validated to ensure it exists, and if valid, it is saved in the configuration data and added to 
+        the specified combo box for easy selection in the future.
+
         Parameters
         ----------
-        - line_edit (`QLineEdit`): The line edit widget.
-        - combo_box_target (`QComboBox`): The combo box to add the path to.
-        - data (`dict`): The data dictionary.
+        - line_edit (`QLineEdit`): The QLineEdit widget containing the file path entered by the user.
+        - combo_box_target (`QComboBox`): The QComboBox widget where the custom name for the file path will be displayed.
+        - data (`dict`): A dictionary containing configuration data, including saved file paths and the currently 
+        selected path.
         """
         if exists(line_edit.text()):
             path_name, confirm_name = create_alert(
@@ -317,12 +362,18 @@ class ConfigTAB():
         
     def delete_file_path(self, combo_box: QComboBox, data: dict) -> None:
         """
-        This function is used to delete a `file path`.
-        
+        Deletes a file path from the combo box and the configuration file.
+
+        This function removes the currently selected file path from a combo box and deletes it from 
+        the configuration data. The user is prompted to confirm the deletion. If no file path is selected 
+        or the selected path is not found in the configuration data, an alert is displayed.
+
         Parameters
         ----------
-        - combo_box (`QComboBox`): The combo box to delete.
-        - data (`dict`): The data dictionary.
+        - combo_box (`QComboBox`): The QComboBox widget containing the list of saved file paths, from which the selected path 
+        will be removed.
+        - data (`dict`): A dictionary containing configuration data, including saved file paths and the currently 
+        selected path.
         """
         if (old_path := combo_box.currentText()) in data["Saved_Path_Files"].keys():
             if create_alert(
@@ -359,16 +410,27 @@ class ConfigTAB():
     def open_github_page(self):
         """
         This function opens my github page in a web browser :D
+        --------
         """
         webbrowser.open(r"https://github.com/ZkSnow")
     
     def reset_data(self, client: QWidget) -> None:
         """
-        This function resets the `data` file.
-        
+        Resets the configuration data by overwriting the data file and closes the client widget.
+
+        This function erases all the current data in the configuration file, effectively resetting the 
+        application state. It prompts the user for confirmation before performing the reset, and if 
+        confirmed, it writes the default data to the file and closes the client widget to apply the changes.
+
         Parameters
         ----------
-        - client (`QWidget`): The client widget to close.        
+        - client (`QWidget`): The client widget (main window) that will be closed after the data is reset.
+
+        Notes
+        -----
+        - The function opens and overwrites the `UserData.json` file with default data (`USERDATA`).
+        - After resetting the data, the client widget is closed to apply the changes.
+        - The reset is irreversible, so it is important that the user explicitly confirms the action.
         """
         if create_alert(
             "ARE YOU SURE?", 
@@ -385,15 +447,19 @@ class ConfigTAB():
             
     def reset_adb_server(self, buttons: list, data: dict) -> None:
         """
-        This function resets the `adb server`.
-        
+        Resets the ADB server by initiating a reset process on the selected scrcpy version.
+
+        This function performs a reset of the ADB server, It first verifies that the scrcpy path is valid, 
+        prompts the user for confirmation, and then starts a thread to execute the reset. During this process, 
+        the state of the specified buttons is toggled to indicate that the reset is in progress.
+
         Parameters
         ----------
-        - buttons (`list`): A list of non-concurrent buttons.
-        - data (`dict`): A dictionary containing the user data.
-        
+        - buttons (`list`): A list of buttons that will be toggled (enabled/disabled) during the reset process to prevent 
+        concurrent actions. The list contains non-concurrent buttons which will be disabled while the reset 
+        is ongoing and restored to their original state afterward.
+        - data (`dict`): A dictionary containing user data, including the path to the selected scrcpy version.
         """
-        
         if path := data["Versions"]["Selected_Version"]["Path"] or not running_on_windows:
             if verify_scrcpy_path(path):
                 if create_alert(
@@ -433,23 +499,35 @@ class ConfigTAB():
     
     def path_to_save_file(self, line_edit_target: QLineEdit) -> None:
         """
-        This function lets you choose the directory in which to save the video files.
-        
+        Opens a dialog for the user to select a directory to save video files.
+
+        This function prompts the user with a file dialog to choose a directory on their system where 
+        video files should be saved. Once the user selects a directory, the path is set in the specified 
+        line edit widget, which can then be used to store or reference the selected save path.
+
         Parameters
         ----------
-        - line_edit_target (`QLineEdit`): The line edit widget to get the text from.
+        - line_edit_target (`QLineEdit`): The QLineEdit widget where the selected directory path will be displayed.
         """
         Directory = QFileDialog.getExistingDirectory(None, "Select Save Directory")
         line_edit_target.setText(Directory)
             
     def path_mode(self, index: int, data: dict) -> None:
         """
-        This function updates the `Path_Mode_Radio` in `File_Path_Config`.
-        
+        Updates the `Path_Mode_Radio` setting in the `File_Path_Config` dictionary based on the selected index.
+
+        This function modifies the `Path_Mode_Radio` value in the configuration data to reflect the selected 
+        mode, which is determined by the radio button's index. The radio button can represent two modes, 
+        where index `0` represents the first mode and index `1` represents the second. The function then 
+        saves the updated configuration to the data file.
+
         Parameters
         ----------
-        - index (`int`): The index of the radio button.
-        - data (`dict`): The data dictionary.
+        - index (`int`): 
+            The index of the selected radio button, where:
+            - `0` corresponds to (`True, False`).
+            - `1` corresponds to (`False, True`).
+        - data (`dict`): The data dictionary that contains the configuration settings.
         """
         path_mode = [True, False] if index == 0 else [False, True]
         data["Path_Mode_Radio"] = path_mode
@@ -460,13 +538,17 @@ class ConfigTAB():
     
     def version_selected(self, combo_box: QComboBox, line_edit_target: QLineEdit, data: dict) -> None:
         """
-        This function updates the `Saved_Versions` in `Versions`.
-        
+        Updates the selected version in the `Saved_Versions` and `Selected_Version` sections of the configuration.
+
+        This function retrieves the currently selected version from the combo box, updates the `Selected_Version` 
+        in the `data` dictionary, and sets the path in the specified line edit widget. It then saves the updated version 
+        information in the configuration file under both `Selected_Version` and `Saved_Versions`.
+
         Parameters
         ----------
-        - combo_box (`QComboBox`): The combo box widget to get the index from.
-        - line_edit_target (`QLineEdit`): The line edit widget to get the text from.
-        - data (`dict`): The data dictionary.
+        - combo_box (`QComboBox`): The combo box widget from which the currently selected version is retrieved.
+        - line_edit_target (`QLineEdit`): The line edit widget where the path of the selected version is displayed.
+        - data (`dict`): The dictionary containing configuration data.
         """
         if (current_version_name := combo_box.currentText()) in data["Saved_Versions"].keys():
             current_version = data["Saved_Versions"][current_version_name]
@@ -485,13 +567,17 @@ class ConfigTAB():
               
     def path_selected(self, combo_box: QComboBox, line_edit_target: QLineEdit, data: dict) -> None:
         """
-        This function updates the `Path_selected` in `File_Path_Config`.
-        
+        Updates the `Path_selected` in the `File_Path_Config` section of the configuration file.
+
+        This function retrieves the currently selected path from the combo box, updates the `Path_selected` in the 
+        `data` dictionary, and displays the path in the specified line edit widget. It then saves the updated path 
+        information in the configuration file under the `Path_selected` section.
+
         Parameters
         ----------
-        - combo_box (`QComboBox`): The combo box widget to get the index from.
-        - line_edit_target (`QLineEdit`): The line edit widget to get the text from.
-        - data (`dict`): The data dictionary.
+        - combo_box (`QComboBox`): The combo box widget from which the currently selected path is retrieved.
+        - line_edit_target (`QLineEdit`): The line edit widget where the selected path is displayed.
+        - data (`dict`): The dictionary containing configuration data.
         """
         if (current_path := combo_box.currentText()) in data["Saved_Path_Files"].keys():
             current_path = data["Saved_Path_Files"][current_path]
@@ -503,16 +589,19 @@ class ConfigTAB():
         
     def last_index_selected(self, combo_box_num: int, comobo_box: QComboBox) -> None:
         """
-        This function updates the `index_combox` in `Last_Session_Config`.
-        
+        Updates the `index_combox` in the `Last_Session_Config` section of the configuration file.
+
+        This function retrieves the currently selected index from the given combo box and updates the 
+        `index_combox` in the `Last_Session_Config` dictionary, specifically updating the index for the 
+        provided combo box number. The updated index is saved in the configuration file to persist 
+        the user's last selection.
+
         Parameters
         ----------
-        - combo_box_num (`int`): The index of the `index_combox` in `Last_Session_Config`.
-        - comobo_box (`QComboBox`): The combo box widget to get the index from.
+        - combo_box_num (`int`): The index of the combo box in the `Last_Session_Config` section.
+        - combo_box (`QComboBox`): The combo box widget from which the selected index is retrieved.
         """
         update_data_file(
             comobo_box.currentIndex(),
             ["Last_Session_Config", "ConfigTAB", "Index_Combox", combo_box_num],
         )
-
-        

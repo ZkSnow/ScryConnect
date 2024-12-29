@@ -12,13 +12,16 @@ import Script.Utilities.Create_Elements as Create
 
 class DeviceListUI(QScrollArea):
     """
-    This class represents the device list UI.
-    
+    Represents the device list user interface (UI-ConnectTab).
+
+    This class creates a scrollable UI component to display and manage the list 
+    of connected devices.
+
     Parameters
     ----------
-    - userdata (`dict`): A dictionary containing the user data.
-    - parent (`any`, `optional`): The parent widget. Defaults to None.
-
+    - userdata (`dict`): A dictionary containing the user data, including the 
+    selected scrcpy version path and device information.
+    - parent (`any`, optional): The parent widget of this UI. Defaults to `None`.
     """
     def __init__(self, userdata: dict, parent = None):
         super().__init__()
@@ -33,6 +36,12 @@ class DeviceListUI(QScrollArea):
         self.start_ui()
     
     def start_ui(self):
+        """
+        Initializes the user interface for the device list UI.
+
+        This method sets up the main layout and widget for the device list UI, 
+        ensuring that the content is scrollable and aligned to the top.
+        """
         self.content = QWidget()
         self.content.setObjectName("FindDevicescontent")
         self.setWidget(self.content)
@@ -41,6 +50,23 @@ class DeviceListUI(QScrollArea):
         self.content_layout.setAlignment(Qt.AlignTop)
     
     def create_device_board(self, device_name: str, device_ip: str) -> QGroupBox:
+        """
+        Creates a device board UI component for a given device.
+
+        This method generates a `QGroupBox` containing device details and a button 
+        to connect to the specified device. The layout organizes the device name, 
+        IP address, and connect button.
+
+        Parameters
+        ----------
+        - device_name (`str`): The name of the device to display on the board.
+        - device_ip (`str`): The IP address of the device to display on the board.
+
+        Returns
+        -------
+        - `QGroupBox`: A group box widget containing the device details and the 
+        connect button.
+        """
         self.device_box = QGroupBox()
         self.board_layout = QGridLayout()
         self.board_layout.setSpacing(2)
@@ -68,13 +94,16 @@ class DeviceListUI(QScrollArea):
         return self.device_box 
     
     def add_board(self, device_name: str, device_ip: str) -> None:
-        """ 
-        Add a new board to the device list using `create_device_board`.
-        
+        """
+        Adds a new device board to the device list UI.
+
+        This method utilizes `create_device_board` to generate a new board for 
+        the specified device and appends it to the main content layout.
+
         Parameters
         ----------
-        - device_name (`str`): The name of the device.
-        - device_ip (`str`): The IP address of the device.
+        - device_name (`str`): The name of the device to add.
+        - device_ip (`str`): The IP address of the device to add.
         """
         self.content_layout.addWidget(
             self.create_device_board(

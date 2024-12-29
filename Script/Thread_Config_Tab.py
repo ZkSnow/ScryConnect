@@ -11,15 +11,24 @@ from Script.Utilities.Utils import toggle_button_state, update_data_file
 running_on_windows = system() == "Windows"
 class ConfigTAB_Thread(QThread):
     """
-    This class is used to run the `start` commands in a `separate thread`.
-    
+    This class runs the specified command in a separate thread to prevent blocking the main UI thread.
+
+    The `ConfigTAB_Thread` class is designed to handle background operations, such as executing commands 
+    related to the `scrcpy`, while allowing the UI to remain responsive. The class uses PyQt's threading 
+    mechanisms and signals to communicate the results of the operations back to the main thread.
+
     Parameters
     ----------
-    - command (`str`): the command to run in the thread.
-    - path (`str`): the path to the scrcpy folder.
-    - *func_args (`tuple`): the arguments for the function.
+    - command_name (`str`): The name of the command to run in the thread, related to scrcpy operations.
+    - path (`str`): The path to the scrcpy installation folder, where necessary executables (e.g., `scrcpy`, `adb`) are located.
+    - *func_args (`tuple`): The arguments that will be passed to the function that is executed in the thread.
+
+    Signals
+    -------
+    - `charge_resolution_output` (`pyqtSignal(str)`): Emitted when resolution data is updated.
+    - `get_device_output` (`pyqtSignal(list)`): Emitted with the list of devices found by the command.
+    - `reset_server_output` (`pyqtSignal(list)`): Emitted to reset the server after executing the command.
     """
-    
     charge_resolution_output = pyqtSignal(str)
     get_device_output = pyqtSignal(list)
     reset_server_output = pyqtSignal(list)
@@ -44,11 +53,15 @@ class ConfigTAB_Thread(QThread):
 
     def get_connect_devices(self) -> list:
         """
-        This function runs the `adb devices` in a `separate thread` to get the list of `devices`.
-        
+        Runs the `adb devices` command in a separate thread to retrieve the list of connected devices.
+
+        This function uses `subprocess` to execute the `adb devices` command and parse the output into a 
+        list of connected devices. The list of devices is then emitted to the main UI thread through the 
+        `get_device_output` signal.
+
         Emits
         -----
-        - `get_device_output` (`list`) --> list of `devices`.
+        - `get_device_output` (`list`): A list of devices currently connected via ADB.
         """
         list_devices = subprocess.run(
             args="adb devices",
@@ -66,12 +79,21 @@ class ConfigTAB_Thread(QThread):
 
     def charge_device_resolution(self) -> str:
         """
-        This function runs the `adb shell wm size` in a `separate thread` 
-        to charge the `device` resolution.
-        
+        Runs the `adb shell wm size` command in a separate thread to update the resolution of the connected device.
+
+        This function allows the user to set or reset the resolution of a device by invoking the `adb shell wm size` 
+        command. It handles both setting a specific resolution and resetting to the default resolution. The result 
+        (success or error message) is emitted back to the main thread through the `charge_resolution_output` signal.
+
         Emits
         -----
-        - `charge_resolution_output` (`str`): the output of the `adb shell wm size` command.
+        - `charge_resolution_output` (`str`): The output of the `adb shell wm size` command, either the updated resolution 
+        or an error message if something goes wrong.
+
+        Parameters (self.func_args[n])
+        ----------
+        - device (`str`) `[0]`: The device identifier (usually `adb` device ID).
+        - resolution (`str`) `[1]`: The desired resolution to be set for the device, or an empty string to reset.
         """
         device = self.func_args[0]    
         resolution = self.func_args[1]
@@ -95,13 +117,16 @@ class ConfigTAB_Thread(QThread):
             
     def reset_adb_server(self) -> list:
         """
-        This function runs the `adb kill-server` and `adb start-server` in a `separate thread` 
-        to reset the `adb` server.
-        
+        Resets the ADB server by running `adb kill-server` followed by `adb start-server` in a separate thread.
+
+        This function is used to restart the ADB server, which may be necessary when encountering issues with device 
+        connections. The process involves stopping the ADB server and then starting it again. Any error or warning messages 
+        generated during this process are emitted back to the main thread through the `reset_server_output` signal.
+
         Emits
         -----
-        - `reset_server_output` (`list`): list of `errors` and `warnings` provided by the 
-                                `reset_server` function.
+        - `reset_server_output` (`list`): A list containing any errors or warnings that occurred during the execution 
+        of the `adb kill-server` and `adb start-server` commands.
         """
         end = subprocess.run(
             args="adb kill-server",
@@ -123,7 +148,21 @@ class ConfigTAB_Thread(QThread):
     
     def get_scrcpy_version_and_save(self):
         """
-        This function runs the `scrcpy -v` in a `separate thread` to get the version of `scrcpy`.
+        This function retrieves the version of scrcpy by executing the `scrcpy -v` command in a separate thread.
+
+        It runs the scrcpy command to fetch its version, processes the output, and extracts the version number. The version 
+        is then stored in the provided data dictionary and updated in the configuration file. If there is an error retrieving 
+        the version, an alert is shown and the client window is closed if applicable.
+
+        Emits
+        -----
+        - This function does not emit any signals but updates the configuration data.
+
+        Parameters (self.func_args[n])
+        ----------
+        - version_name (`str`) `[0]`: The name of the version.
+        - data (`dict`) `[1]`: A dictionary where the selected scrcpy version information is stored.
+        - client (`QDialog`) `[2]`: The client window.
         """
         scrcpy_version = subprocess.run(
             args="scrcpy -v",
@@ -172,6 +211,38 @@ class ConfigTAB_Thread(QThread):
                     ["Versions", "Saved_Versions", version_name],
                 )
         
+    @pyqtSlot(list)
+    def start_resolution_ui(self, device_list: list) -> None:
+        """
+        Starts the UI for selecting a device to change its resolution.
+
+        This function displays the UI that allows the user to choose a device from the provided `device_list` and set its 
+        resolution. The function checks if a resolution is provided and passes it to the UI. If no devices are found, 
+        an alert is shown to inform the user.
+
+        Parameters
+        ----------
+        - device_list (`list`): A list of devices available for resolution adjustment. This list is passed to the device 
+        selection UI.
+        - self.func_args[n]:
+            - path (`str`) `[0]`: Path to the scrcpy folder, used by the UI for device interaction.
+            - resolution (`str`) `[1]`: The desired resolution to set for the selected device. If not provided, resolution 
+            will be left as `None`.
+        """
+
+        if device_list:
+            DeviceSelectionUI = self.func_args[0]
+            if resolution:= self.func_args[1]:
+                DeviceSelectionUI(device_list, self.path, "Device Resolution", resolution)
+            else:
+                DeviceSelectionUI(device_list, self.path, "Device Resolution", None)
+        else:
+            create_alert(
+                "Nothing Found",
+                ("No device found, make sure " 
+                "it is connected via Wi-Fi or USB")
+            )
+    
     @pyqtSlot(str)
     def check_emit_res(self, emit_output: str) -> None:
         """
@@ -212,6 +283,9 @@ class ConfigTAB_Thread(QThread):
         Parameters
         ----------
         - emits_ouputs (`list`): list of errors provided by `reset_adb_server` function.
+        - self.func_args[n]:
+            - buttons (`list`) `[0]`: list of buttons to toggle.
+            - original_text (`str`) `[1]`: original text of the button.
         """
         if "started successfully" in (start_emit := emits_ouputs[0]):
             create_alert(
@@ -226,27 +300,3 @@ class ConfigTAB_Thread(QThread):
             True,
             self.func_args[1], #original_text
         )
-    
-    @pyqtSlot(list)
-    def start_resolution_ui(self, device_list: list) -> None:
-        """
-        This functions runs UI for choosing the `device` to change the `resolution` of the `device`.
-        
-        Parameters
-        ----------
-        - device_list (`list`): list of `devices`.
-        """
-        if device_list:
-            DeviceSelectionUI = self.func_args[0]
-            if resolution:= self.func_args[1]:
-                DeviceSelectionUI(device_list, self.path, "Device Resolution", resolution)
-            else:
-                DeviceSelectionUI(device_list, self.path, "Device Resolution", None)
-        else:
-            create_alert(
-                "Nothing Found",
-                ("No device found, make sure " 
-                "it is connected via Wi-Fi or USB")
-            )
-
-    
