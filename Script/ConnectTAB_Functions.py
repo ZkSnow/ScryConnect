@@ -180,50 +180,51 @@ class ConnectTAB():
         line edits. If the fields are invalid or empty, appropriate alerts are displayed.
         """
         connect_infos = self.connect_to_line_edit(non_concurrent_buttons, line_edits, data, True)
-        path = data["Versions"]["Selected_Version"]["Path"]
-        accept_confirm = create_alert(
-            "Check The Filled Fields",
-            "Check if the IP and Port match Wifi Debug before proceeding",
-            "confirm",
-        )
-        if accept_confirm:
-            while True:
-                pair_code, accept_input = create_alert(
-                    "Pair Code",
-                    "Enter your Wi-Fi Debug pairing code and place it in the field below.",
-                    "input",
-                )
-                if not pair_code and accept_input:
-                    create_alert(
-                        "Pair Code Error",
-                        "Pair code cannot be empty",
+        if connect_infos is not None:
+            path = data["Versions"]["Selected_Version"]["Path"]
+            accept_confirm = create_alert(
+                "Check The Filled Fields",
+                "Check if the IP and Port match Wifi Debug before proceeding",
+                "confirm",
+            )
+            if accept_confirm:
+                while True:
+                    pair_code, accept_input = create_alert(
+                        "Pair Code",
+                        "Enter your Wi-Fi Debug pairing code and place it in the field below.",
+                        "input",
                     )
-                else:
-                    break
-            if accept_input:
-                original_text = toggle_button_state(
-                    non_concurrent_buttons,
-                    False
-                )
-                self.terminal = ConnectTAB_Thread(
-                    "wifi_connect_device",
-                    path,
-                    connect_infos[0],
-                    connect_infos[1],
-                    pair_code,
-                )
-                self.terminal.start()
-                self.terminal.wifi_connect_output.connect(
-                    self.terminal.check_emits_wifi_debug
-                )
-                self.terminal.finished.connect(
-                    partial(
-                        toggle_button_state,
+                    if not pair_code and accept_input:
+                        create_alert(
+                            "Pair Code Error",
+                            "Pair code cannot be empty",
+                        )
+                    else:
+                        break
+                if accept_input:
+                    original_text = toggle_button_state(
                         non_concurrent_buttons,
-                        True,
-                        original_text,
+                        False
                     )
-                )                      
+                    self.terminal = ConnectTAB_Thread(
+                        "wifi_connect_device",
+                        path,
+                        connect_infos[0],
+                        connect_infos[1],
+                        pair_code,
+                    )
+                    self.terminal.start()
+                    self.terminal.wifi_connect_output.connect(
+                        self.terminal.check_emits_wifi_debug
+                    )
+                    self.terminal.finished.connect(
+                        partial(
+                            toggle_button_state,
+                            non_concurrent_buttons,
+                            True,
+                            original_text,
+                        )
+                    )                      
     
     def save_custom_connection(self, combo_box_target: QComboBox, list_edits: list, data: dict) -> None:
         """
