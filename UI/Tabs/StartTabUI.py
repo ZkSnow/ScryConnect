@@ -359,7 +359,6 @@ class StartTab(QWidget):
                 slider,
                 line_edit_value[index],
                 index,
-                self.userdata["Last_Session_Config"]["StartTAB"]
             )
        
         connect_signal(
