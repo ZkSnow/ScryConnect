@@ -5,7 +5,8 @@ from PyQt5.QtWidgets import (
     QSpacerItem, 
     QComboBox, 
     QTabWidget, 
-    QMainWindow
+    QMainWindow,
+    QScrollArea,
 )
 
 from Script.ConfigTAB_Functions import ConfigTAB
@@ -13,7 +14,7 @@ from Script.Utilities import Create_Elements as Create
 from Script.Utilities.Utils import connect_signal
 from Script.Utilities.Auxiliary_Funcs import assemble_grid_layout, get_datas_for_ui
 
-class ConfigTab(QWidget):
+class ConfigTab(QScrollArea):
     """
     Represents the configuration tab UI in the application.
 
@@ -40,6 +41,10 @@ class ConfigTab(QWidget):
         self.non_concurrent_buttons = nconc_btns
         self.client = client
         
+        self.setWidgetResizable(True)
+        self.content = QWidget()
+        self.setWidget(self.content)
+        
         self.create_elements()
         self.assemble_elements()
         self.connect_functions_elements()
@@ -57,34 +62,34 @@ class ConfigTab(QWidget):
         selected_version, versions, resolution, path_mode, last_path_file,\
         directory_name, combox_index = get_datas_for_ui(self.userdata, "config")
         
-        self.label_scrcpy_versions = Create.Label("Scrcpy Versions", self)
-        self.label_custom_resolution = Create.Label("Custom Resolution", self)
-        self.label_path_save_recording = Create.Label("Path To Save Recording", self)
+        self.label_scrcpy_versions = Create.Label("Scrcpy Versions")
+        self.label_custom_resolution = Create.Label("Custom Resolution")
+        self.label_path_save_recording = Create.Label("Path To Save Recording")
         
-        self.combox_versions = Create.Combox(versions, self, (451, 22), combox_index[0])
-        self.combox_resolutions = Create.Combox(resolution, self, (451, 22), combox_index[1])
-        self.combox_file_path = Create.Combox(directory_name, self, (451, 22), combox_index[2])
+        self.combox_versions = Create.Combox(versions, (451, 22), combox_index[0])
+        self.combox_resolutions = Create.Combox(resolution, (451, 22), combox_index[1])
+        self.combox_file_path = Create.Combox(directory_name, (451, 22), combox_index[2])
         
-        self.text_path_scrcpy = Create.LineEdit("Path to Scrcpy...", self, (451, 20), selected_version)
-        self.text_path_file = Create.LineEdit("Path to Save File...", self, (451, 20), last_path_file)
+        self.text_path_scrcpy = Create.LineEdit("Path to Scrcpy...", (451, 20), selected_version)
+        self.text_path_file = Create.LineEdit("Path to Save File...", (451, 20), last_path_file)
         
-        self.button_version = Create.Button("Save Version", self, (221, 23))
-        self.button_delete_version = Create.Button("Delete Version", self, (221, 23))
-        self.button_new_version = Create.Button("New Version", self, (451, 23))
-        self.button_new_resolution = Create.Button("New Resolution", self, (221, 23))
-        self.button_delete_resolution = Create.Button("Delete Resolution", self, (221, 23))
-        self.button_charge_resolution = Create.Button("Charge Resolution", self, (451, 23))
-        self.button_native_resolution = Create.Button("Native Resolution", self, (451, 23))
-        self.button_path_file = Create.Button("Save Path", self, (221, 23))
-        self.button_delete_path_file = Create.Button("Delete Path", self, (221, 23))
-        self.button_find_save_path = Create.Button("Find Path", self, (451, 23))
-        self.button_reset_data = Create.Button("Reset Data", self, (75, 23), "Reset_Button")
-        self.button_reset_server = Create.Button("Reset Server", self, (75, 23), "Reset_Button")
-        self.button_github_button = Create.Button("\U0001F5A5", self, (20, 20), "Github_Button")
+        self.button_version = Create.Button("Save Version", (221, 23))
+        self.button_delete_version = Create.Button("Delete Version", (221, 23))
+        self.button_new_version = Create.Button("New Version", (451, 23))
+        self.button_new_resolution = Create.Button("New Resolution", (221, 23))
+        self.button_delete_resolution = Create.Button("Delete Resolution", (221, 23))
+        self.button_charge_resolution = Create.Button("Charge Resolution", (451, 23))
+        self.button_native_resolution = Create.Button("Native Resolution", (451, 23))
+        self.button_path_file = Create.Button("Save Path", (221, 23))
+        self.button_delete_path_file = Create.Button("Delete Path", (221, 23))
+        self.button_find_save_path = Create.Button("Find Path", (451, 23))
+        self.button_reset_data = Create.Button("Reset Data", (75, 23), "Reset_Button")
+        self.button_reset_server = Create.Button("Reset Server", (75, 23), "Reset_Button")
+        self.button_github_button = Create.Button("\U0001F5A5", (20, 20), "Github_Button")
         self.button_github_button.setMaximumSize(20, 20)
         
-        self.radio_custom = Create.RadioButton("Custom Path", self, (91, 16), path_mode[0])
-        self.radio_default = Create.RadioButton("Default path", self, (91, 20), path_mode[1])
+        self.radio_custom = Create.RadioButton("Custom Path", (91, 16), path_mode[0])
+        self.radio_default = Create.RadioButton("Default path", (91, 20), path_mode[1])
         
     def assemble_elements(self):
         """
@@ -141,7 +146,9 @@ class ConfigTab(QWidget):
         
         upper_content.setLayout(upper_layout)
         lower_content.setLayout(lower_layout)
-        self.setLayout(main_layout)
+        
+        main_layout.setContentsMargins(0, 0, 0, 0)
+        self.content.setLayout(main_layout)
         
     def connect_functions_elements(self):
         """

@@ -49,7 +49,7 @@ def get_sliders_start(sliders: list, active_checks: list, scrcpy_version: float)
             
         if "time limit" in active_checks and index == 5 and scrcpy_version >= 2.1:
             args_line += f" --time-limit {slider.value()}"
-    
+            
     return args_line
 
 def get_line_edit_start(line_edits: list, active_checks: list, record_combox: QComboBox, scrcpy_version: float) -> str:
@@ -82,10 +82,13 @@ def get_line_edit_start(line_edits: list, active_checks: list, record_combox: QC
             if extension_file  in ["opus", "aac"] and scrcpy_version >= 2.1:
                 args_line += f" --audio-codec={extension_file}"
             args_line += f" --record {lineedit.text() or 'video'}.{extension_file}"
+        
+        if "mouse binding" in active_checks and index == 1 and scrcpy_version >= 2.5:
+            args_line += f" --mouse-bind={lineedit.text()}"
             
-        if "crop" in active_checks and index == 1:
+        if "crop" in active_checks and index == 2:
             args_line += f" --crop {lineedit.text()}"
-    
+
     return args_line
 
 def get_combo_box_start(combo_boxs: list, scrcpy_version: float) -> str:
@@ -312,7 +315,8 @@ def arguments_errors(err_out: list) -> bool:
     elif "camera options are only available with --video-source=camera" in err_out:
         create_alert(
             "Camera Options",
-            "Camera options are only available with --video-source=camera",
+            ("Camera options are only available with --video-source=camera"
+            "\n(This can also be caused by the '--crop' argument)")
         )
     elif "could not specify both --camera-size and -m/--max-size" in err_out:
         create_alert(
@@ -334,6 +338,37 @@ def arguments_errors(err_out: list) -> bool:
         create_alert(
             "Otg Mode Disabled",
             "OTG mode (--otg) has been disabled, to fix this problem try updating the version of scrcpy" 
+        )
+    elif "invalid mouse bindings" in err_out:
+        create_alert(
+            "Mouse Bindings",
+            ("Mouse bindings are invalid, mouse binding can have a maximum of 4 characters"
+            "\nand using any of these characters: '+', '-', 'b', 'h', 's', 'n'.")           
+        )
+    elif "could not retrieve device information" in err_out:
+        create_alert(
+            "Args Error",
+            "Could not retrieve device information, try changing the arguments",
+        )
+    elif "--no-mouse-over is specific to --mouse=sdk" in err_out:
+        create_alert(
+            "No Mouse Over",
+            "The --no-mouse-over option is specific to --mouse=sdk",
+        )
+    elif "--no-key-repeat is specific to --keyboard=sdk" in err_out:
+        create_alert(
+            "No Key Repeat",
+            "The --no-key-repeat option is specific to --keyboard=sdk",
+        )
+    elif "--prefer-text is specific to --keyboard=sdk" in err_out:
+        create_alert(
+            "Prefer Text",
+            "The --prefer-text option is specific to --keyboard=sdk",
+        )
+    elif "--raw-key-events is specific to --keyboard=sdk" in err_out:
+        create_alert(
+            "Raw Key Events",
+            "The --raw-key-events option is specific to --keyboard=sdk",
         )
     else: 
         error_detect = False
@@ -446,13 +481,13 @@ def args_combination_errors(err_out: list) -> bool:
     elif "not request to show touches if control is disabled" in err_out:
         create_alert(
             "Incompatible Args",
-            ("The args '--show-touches' and '--no-control' are not compatible\n" 
+            ("The args '--show-touches' and '--no-control' (or camera) are not compatible\n" 
             "remove one of them and try again"),
         )
     elif "not request to stay awake if control is disabled" in err_out:
         create_alert(
             "Incompatible Args",
-            ("The args '--stay-awake' and '--no-control' are not compatible\n" 
+            ("The args '--stay-awake' and '--no-control' (or camera) are not compatible\n" 
             "remove one of them and try again"),
         )
     else: 

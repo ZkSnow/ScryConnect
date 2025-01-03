@@ -296,7 +296,8 @@ class StartTAB():
             "Mouse + Keyboard",
             "AoA",
             "uHid",
-            "SDK"
+            "SDK",
+            "mouse binding"
         ]
         
         command_line = "" 

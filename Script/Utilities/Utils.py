@@ -72,9 +72,7 @@ def connect_signal(element: any, conn_type: str, method: Callable, *args: tuple)
         raise ValueError(
             f"Invalid connection type: '{conn_type}'. Valid types: '{valid_conn_types}'"
         )
-    
-    if conn_type in valid_conn_types:
-        getattr(element, conn_type).connect(partial(method, *args))
+    getattr(element, conn_type).connect(partial(method, *args))
         
 def toggle_button_state(
     buttons: list, 

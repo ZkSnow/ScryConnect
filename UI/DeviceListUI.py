@@ -72,9 +72,9 @@ class DeviceListUI(QScrollArea):
         self.board_layout.setSpacing(2)
         self.device_box.setMinimumSize(411, 120)
         
-        self.label_device_name = Create.Label(f"Name: {device_name}", self.device_box)
-        self.label_ip = Create.Label(f"IP: {device_ip}", self.device_box)
-        self.button_connect = Create.Button("Connect Device", self.device_box, (111, 41))      
+        self.label_device_name = Create.Label(f"Name: {device_name}")
+        self.label_ip = Create.Label(f"IP: {device_ip}")
+        self.button_connect = Create.Button("Connect Device", (111, 41))      
         
         self.board_layout.addWidget(self.label_device_name, 0, 0, Qt.AlignCenter)
         self.board_layout.addWidget(self.label_ip, 1, 0, Qt.AlignCenter)

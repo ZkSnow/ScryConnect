@@ -1,5 +1,5 @@
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QWidget, QGridLayout, QTabWidget
+from PyQt5.QtWidgets import QWidget, QGridLayout, QTabWidget, QScrollArea
 
 from UI.DeviceListUI import DeviceListUI
 from Script.ConnectTAB_Functions import ConnectTAB, DeviceList
@@ -7,7 +7,7 @@ from Script.Utilities.Utils import connect_signal
 from Script.Utilities import Create_Elements as Create
 from Script.Utilities.Auxiliary_Funcs import assemble_grid_layout, get_datas_for_ui
 
-class ConnectTab(QWidget):
+class ConnectTab(QScrollArea):
     """
     Represents the connection tab UI in the application.
 
@@ -31,6 +31,10 @@ class ConnectTab(QWidget):
         self.userdata = userdata
         self.non_concurrent_buttons = nconc_btns
         
+        self.setWidgetResizable(True)
+        self.content = QWidget()
+        self.setWidget(self.content)
+        
         self.create_elements()
         self.assemble_elements()
         self.connect_functions_elements()
@@ -47,23 +51,23 @@ class ConnectTab(QWidget):
         """
         ips, last_ip_index, last_texts, auto_port = get_datas_for_ui(self.userdata, "connect")
         
-        self.label_manual_connect = Create.Label("Manual Connection", self)
-        self.label_auto_connect = Create.Label("Auto Connection", self)
+        self.label_manual_connect = Create.Label("Manual Connection")
+        self.label_auto_connect = Create.Label("Auto Connection")
         
-        self.combox_saved_ips = Create.Combox(ips, self, index=last_ip_index)
+        self.combox_saved_ips = Create.Combox(ips, index=last_ip_index)
         self.combox_saved_ips.setFocusPolicy(Qt.NoFocus)
         
         self.text_ip = Create.LineEdit("Custom IP Address...", initial_text=last_texts[0], input_filter="^[0-9A-Fa-f:.]+$")
         self.text_port = Create.LineEdit("Port...", initial_text=last_texts[1], input_filter="^[0-9]*$")
-        self.text_port_auto = Create.LineEdit("Port...", self, (201, 20), auto_port, "^[0-9]*$")
+        self.text_port_auto = Create.LineEdit("Port...", (201, 20), auto_port, "^[0-9]*$")
         
-        self.button_connect = Create.Button("Connect", self, (50, 24))
-        self.button_save_custom = Create.Button("Save", self, (50, 24))
-        self.button_delete_custom = Create.Button("Delete", self, (50, 24))
-        self.button_connect_textline = Create.Button("Connect Text Line", self, (50, 24))
-        self.button_disconnect = Create.Button("Disconnect", self, (50, 24))
-        self.button_wifi_debug = Create.Button("Wifi Debug", self, (50, 24))
-        self.button_detect_devices = Create.Button("Detect Devices", self, (200, 24))
+        self.button_connect = Create.Button("Connect", (50, 24))
+        self.button_save_custom = Create.Button("Save", (50, 24))
+        self.button_delete_custom = Create.Button("Delete", (50, 24))
+        self.button_connect_textline = Create.Button("Connect Text Line", (50, 24))
+        self.button_disconnect = Create.Button("Disconnect", (50, 24))
+        self.button_wifi_debug = Create.Button("Wifi Debug", (50, 24))
+        self.button_detect_devices = Create.Button("Detect Devices", (200, 24))
         
         self.DeviceL = DeviceListUI(self.userdata)
         
@@ -109,7 +113,9 @@ class ConnectTab(QWidget):
         
         upper_content.setLayout(upper_layout)
         lower_content.setLayout(lower_layout)
-        self.setLayout(main_layout)
+        
+        main_layout.setContentsMargins(0, 0, 0, 0)
+        self.content.setLayout(main_layout)
         
     def connect_functions_elements(self):
         """

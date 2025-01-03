@@ -144,9 +144,9 @@ class DeviceSelectionUI(QDialog):
         button_locate = (153, 0) if self.large_device_list else (166, 0)
         device_text = f"{device_name[:17]}..." if len(device_name) > 20 else device_name
         
-        label_device_name = Create.Label(device_text, device_board, (10, 8))
+        label_device_name = Create.Label(device_text, (10, 8), parent=device_board)
         label_device_name.move(5, 7)
-        select_button = Create.Button("Select", device_board, (55, 35), "SelectDeviceButton")
+        select_button = Create.Button("Select", (55, 35), "SelectDeviceButton", parent=device_board)
         select_button.move(button_locate[0], 0)
         self.buttons.append(select_button)
         

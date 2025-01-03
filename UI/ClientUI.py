@@ -13,9 +13,7 @@ from UI.Tabs.StartTabUI import StartTab
 from UI.Tabs.ConfigTabUI import ConfigTab
 from Script.Thread_Config_Tab import ConfigTAB_Thread
 
-TAB_WIDTH = 555
-TAB_HEIGHT = 700 #736
-
+TAB_WIDTH = 570
 class Client(QMainWindow):
     """
     Represents the main application window containing all the tabs.
@@ -31,7 +29,8 @@ class Client(QMainWindow):
     def __init__(self, userdata: dict):
         super().__init__()
         self.userdata = userdata
-        self.setMinimumSize(TAB_WIDTH, TAB_HEIGHT)
+        self.setMinimumWidth(TAB_WIDTH)
+        self.resize(TAB_WIDTH, 700)
         self.non_concurrent_buttons = []
         self.setWindowIcon(QIcon(join(":", "icon.ico")))
         
@@ -105,9 +104,9 @@ class Client(QMainWindow):
         """
         if system() == "Linux":
             self.save_scrcpy_version_if_linux()
-            
+        
+        self.setMinimumWidth(TAB_WIDTH)
         self.tabs = QTabWidget()
-        self.tabs.setMinimumSize(TAB_WIDTH, TAB_HEIGHT)
         
         # Create all the tabs
         ConnectTab(self.userdata, self.non_concurrent_buttons, self.tabs)
@@ -118,7 +117,7 @@ class Client(QMainWindow):
         theme_icon = "\U0001f319" if self.userdata["Theme_Active"] == 0 else "\U00002600"
         self.setStyleSheet(black_theme if self.userdata["Theme_Active"] == 0 else white_theme)
         
-        charge_theme_button = Create.Button(theme_icon, self, (33, 33), "ThemeButton")
+        charge_theme_button = Create.Button(theme_icon, (33, 33), "ThemeButton")
         corner_container = QWidget()
         layout = QGridLayout(corner_container)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -131,7 +130,6 @@ class Client(QMainWindow):
             self.charge_theme,
             charge_theme_button,
         )
-        
         self.show()
     
         

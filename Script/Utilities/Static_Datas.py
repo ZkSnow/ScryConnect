@@ -63,14 +63,15 @@ USERDATA = {
                                None,
                                None,
                                None,
-                               None],
+                               ],
             "Slider_Value": [60, 1000, 8, 0, 0, 0],
             "Indexs_Combox": [0, 0, 0, 0, 0, 0, 0],
             "Check_Boxes": [False, False, False,
                             False, False, False, False,
                             False, False, False, False, False,
                             False, False, False, False, False,
-                            False, False, False, False, False],
+                            False, False, False, False, False,
+                            False, False],
                 },
         
         "ConfigTAB": {
@@ -94,9 +95,9 @@ ARGS_LIST = {
 
     },
     
-    "scrcpy_2.2": {
-        "Version": 2.2,
-
+    "scrcpy_2.5": {
+        "Version": 2.5,
+        "no mouse hover": " --no-mouse-hover",
     },
     
     "all_version": {
@@ -247,6 +248,8 @@ LAYOUT_POSITIONS = {
             (10, 1),
             (11, 0),
             (11, 1),
+            (12, 0),
+            (13, 0, 1, 2),
             (0, 4),
             (1, 4, 1, 2),
             (2, 4),
@@ -258,11 +261,10 @@ LAYOUT_POSITIONS = {
             (8, 4),
             (9, 4, 1, 2),
             (10, 4, 1, 2),
-            (11, 4),
-            (11, 5),
-            (12, 4, 1, 2),
-            (13, 4),
-                ],
+            (12, 4),
+            (12, 5),
+            (13, 4, 1, 2),
+            ],
                 
         "lower":[
             (0, 0),
@@ -285,7 +287,10 @@ LAYOUT_POSITIONS = {
             (3, 2),
             (3, 3),
             (3, 4),
-            (4, 0, 1, 5),
+            (4, 0),
+            (4, 1),
+            (4, 2),
+            (5, 0, 1, 5),
             ],
     },
     
