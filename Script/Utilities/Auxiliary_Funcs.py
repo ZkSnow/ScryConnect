@@ -31,7 +31,7 @@ def get_sliders_start(sliders: list, active_checks: list, scrcpy_version: float)
     Returns
     -------
     - `str`: The generated command-line argument string (`arg_line`) based on the slider values and active checks.
-"""
+    """
     args_line = ""
     for index, slider in enumerate(sliders):
         args_line += f" --max-fps {slider.value()}" if index == 0 else ""
@@ -71,7 +71,7 @@ def get_line_edit_start(line_edits: list, active_checks: list, record_combox: QC
     Returns
     -------
     - `str`: The generated command-line argument string (`arg_line`) based on the `lineEdits` and active checks.
-"""
+    """
     args_line = ""
     for index, lineedit in enumerate(line_edits):
         if "record" in active_checks and index == 0:
@@ -119,7 +119,7 @@ def get_combo_box_start(combo_boxs: list, scrcpy_version: float) -> str:
     """
     args_line = ""
     combo_boxs_texts = [combo_box.currentText() for combo_box in combo_boxs[1:]]
-    key_mouse = " ".join(combo_boxs_texts[-2:])
+    key_otg = " ".join(combo_boxs_texts[-2:])
 
     for dict_name in EXTRA_ARGS_LIST:
         version_dict = EXTRA_ARGS_LIST[dict_name]
@@ -128,7 +128,7 @@ def get_combo_box_start(combo_boxs: list, scrcpy_version: float) -> str:
                 version_dict.get(combo_text, "") for combo_text in combo_boxs_texts
             )
             args_line += "".join(
-                version_dict.get(key_mouse, "")
+                version_dict.get(key_otg, "")
             )
         elif dict_name == "deprecated_args":
             for limits in version_dict.keys():
@@ -370,9 +370,54 @@ def arguments_errors(err_out: list) -> bool:
             "Raw Key Events",
             "The --raw-key-events option is specific to --keyboard=sdk",
         )
+    elif "--audio-dup is specific to --audio-source=playback" in err_out:
+        create_alert(
+        "Audio Dup",
+        "The --audio-dup option is specific to --audio-source=playback",
+    )
+    elif "unsupported audio source:" in err_out:
+        create_alert(
+            "Unsupported Audio Source",
+            ("This audio source is not supported (expected output or mic)"
+            "\nor playback if scrcpy version is greater or equal than 2.6"),
+        )
+    elif "--no-control is not allowed in otg mode" in err_out:
+        create_alert(
+            "No Control",
+            "The --no-control option is not allowed in otg mode",
+        )
+    elif "otg mode: could not turn screen off" in err_out:
+        create_alert(
+            "Screen Off",
+            "Could not turn screen off using otg mode",
+        )
+    elif "otg mode: could not stay awake" in err_out:
+        create_alert(
+            "Stay Awake",
+            "Could not stay awake using otg mode",
+        )
+    elif "otg mode: could not request to show touches" in err_out:
+        create_alert(
+            "Show Touches",
+            "Could not request to show touches using otg mode",
+        )
+    elif "sdk mouse mode requires video playback. try --mouse=uhid" in err_out:
+        create_alert(
+            "Mouse Mode",
+            "SDK mouse mode requires video playback. try --mouse=uhid",
+        )
+    elif "in otg mode, --keyboard only supports aoa or disabled" in err_out:
+        create_alert(
+            "Keyboard",
+            "In otg mode, --keyboard only supports aoa or disabled",
+        )
+    elif "in otg mode, --mouse only supports aoa or disabled" in err_out:
+        create_alert(
+            "Mouse",
+            "In otg mode, --mouse only supports aoa or disabled",
+        )
     else: 
         error_detect = False
-    print(err_out)
     return error_detect
     
 def device_errors(err_out: list) -> bool:

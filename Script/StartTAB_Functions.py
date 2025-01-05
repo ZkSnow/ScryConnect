@@ -201,7 +201,7 @@ class StartTAB():
         - `ValueError`: If the `-m` or `--max-size` argument has a value below 500, causing potential errors.
         - `FileNotFoundError`: If the scrcpy or adb executables are missing in the selected version folder.
         """
-        arg_line = manual_arg_line.text().lower() if manual_arg_line else ui_arg_line
+        arg_line = manual_arg_line.text() if manual_arg_line else ui_arg_line
         if valid_maxsize_value(arg_line):
             if path := data["Versions"]["Selected_Version"]["Path"] or not running_on_windows:
                 if verify_scrcpy_path(path):
@@ -298,9 +298,9 @@ class StartTAB():
             "uHid",
             "SDK",
             "mouse binding"
-        ]
+        ] 
         
-        command_line = "" 
+        command_line = ""
         active_checks = [box.text().lower() for box in check_boxes if box.isChecked()]
         scrcpy_version = data["Versions"]["Selected_Version"]["Version"]
         scrcpy_version = float(scrcpy_version) if scrcpy_version else 0.0

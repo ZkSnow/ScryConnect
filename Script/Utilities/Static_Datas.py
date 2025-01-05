@@ -71,7 +71,7 @@ USERDATA = {
                             False, False, False, False, False,
                             False, False, False, False, False,
                             False, False, False, False, False,
-                            False, False],
+                            False, False, False, False, False],
                 },
         
         "ConfigTAB": {
@@ -99,7 +99,12 @@ ARGS_LIST = {
         "Version": 2.5,
         "no mouse hover": " --no-mouse-hover",
     },
-    
+    "scrcpy_2.7": {
+        "Version": 2.7,
+        
+        "gamepad": " -G",
+        "gamepad otg": " -G --otg",
+    },
     "all_version": {
         "record": " -r ",
         "prefer text": " --prefer-text",
@@ -147,7 +152,12 @@ EXTRA_ARGS_LIST = {
         "Horizontal Left": " --lock-video-orientation=270", 
         "Horizontal Right": " --lock-video-orientation=90",
     },
-    
+    "scrcpy_2.6": {
+        "Version": 2.6,
+        
+        "Playback" : " --audio-source=playback",
+        "Audio Dup": " --audio-dup",
+    },
     "all_version": {
         "AoA Mouse": " --otg --mouse=aoa",
         "SDK Mouse": " --mouse=sdk",
@@ -290,6 +300,8 @@ LAYOUT_POSITIONS = {
             (4, 0),
             (4, 1),
             (4, 2),
+            (4, 3),
+            (4, 4),
             (5, 0, 1, 5),
             ],
     },

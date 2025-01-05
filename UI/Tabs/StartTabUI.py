@@ -99,8 +99,10 @@ class StartTab(QScrollArea):
         audio_sources = [
             "Device Sound",
             "Microphone",
+            "Playback",
+            "Audio Dup",
         ]
-        
+
         self.label_save_config = Create.Label("Save Config")
         self.label_custom_start = Create.Label("Custom Start")
         self.label_FPS = Create.Label("FPS")
@@ -124,19 +126,19 @@ class StartTab(QScrollArea):
         self.combox_audio_source = Create.Combox(audio_sources, (191, 22), index_combo[4])
         self.combox_OTG_type = Create.Combox(otg_type, (191, 22), index_combo[5])
         self.combox_OTG_mode = Create.Combox(otg_mode, (191, 22), index_combo[6])
-        
+
         self.text_custom_start = Create.LineEdit("Custom Config... *JUST ARGS*", (301, 20), last_texts[0])
         self.text_record_file_name = Create.LineEdit("File Name...", (111, 20), last_texts[1], r"\S+")
-        self.text_mouse_binding = Create.LineEdit("xxxx (--mouse-bind=xxxx)", (192, 20), last_texts[2], "^[+\-bhsn]+$")
+        self.text_mouse_binding = Create.LineEdit("xxxx (--mouse-bind=xxxx)", (192, 20), last_texts[2], "^[+\-bhsn:]+$")
         self.text_crop_config = Create.LineEdit("width:height:x:y", (192, 20), last_texts[3], "^[0-9:]*$")
-        
+
         self.line_FPS = Create.LineEdit("FPS", (80, 20), slider_values[0], "[0-9]*$", "ValuesLines")
         self.line_max_size = Create.LineEdit("MAX-SIZE", (80, 20), slider_values[1], "[0-9]*$", "ValuesLines")
         self.line_video_bit = Create.LineEdit("VIDEO-BIT", (80, 20), slider_values[2], "[0-9]*$", "ValuesLines")
         self.line_video_buffer = Create.LineEdit("VIDEO-BUFFER", (80, 20), slider_values[3], "[0-9]*$", "ValuesLines")
         self.line_audio_buffer = Create.LineEdit("AUDIO-BUFFER", (80, 20), slider_values[4], "[0-9]*$", "ValuesLines")
         self.line_time_limit = Create.LineEdit("TIME-LIMIT (s)", (80, 20), slider_values[5], "[0-9]*$", "ValuesLines")
-        
+
         self.slider_FPS = Create.Slider(5, 65535, 5, slider_values[0], (151, 21))
         self.slider_max_size = Create.Slider(500, 65535, 100, slider_values[1], (151, 21))
         self.slider_video_bit = Create.Slider(1, 2147, 5, slider_values[2], (151, 21))
@@ -153,7 +155,7 @@ class StartTab(QScrollArea):
         self.button_shell_button = Create.Button("\U0001F4BB", (20, 20), "Shell_Button")
         self.button_default_config.setMaximumSize(20, 20)
         self.button_shell_button.setMaximumSize(20, 20)
-        
+
         self.check_record = Create.CheckBox("Record", (61, 18), last_checks[0])
         self.check_prefer_text = Create.CheckBox("Prefer Text", (81, 20), last_checks[1])
         self.check_no_k_repeat = Create.CheckBox("No K Repeat", (91, 20), last_checks[2])
@@ -178,7 +180,9 @@ class StartTab(QScrollArea):
         self.check_time_limit = Create.CheckBox("Time Limit", (91,  18), last_checks[21])
         self.check_no_mouse_hover = Create.CheckBox("No Mouse Hover", (71, 18), last_checks[22])
         self.check_mouse_binding = Create.CheckBox("Mouse Binding", (71, 18), last_checks[23])
-        
+        self.check_gamepad = Create.CheckBox("Gamepad", (71, 18), last_checks[24])
+        self.check_gamepad_otg = Create.CheckBox("Gamepad OTG", (71, 18), last_checks[25])
+
     def assemble_elements(self):
         """
         Assembles all the UI elements into a grid layout for the `Start Tab`.
@@ -268,6 +272,8 @@ class StartTab(QScrollArea):
             self.check_time_limit,
             self.check_no_mouse_hover,
             self.check_mouse_binding,
+            self.check_gamepad,
+            self.check_gamepad_otg,
             self.button_start,
         )
         
