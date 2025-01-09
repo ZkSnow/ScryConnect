@@ -43,16 +43,18 @@ class ConnectTAB_Thread(QThread):
         self.func_args = func_args
     
     def run(self):
-        if self.command == "connect_device":
-            self.connect_device()
-        elif self.command == "wifi_connect_device": 
-            self.wifi_connect_device()
-        elif self.command == "get_connect_devices":
-            self.get_connect_devices()
-        elif self.command == "disconnect_device":
-            self.disconnect_device()
-        else:
-            raise ValueError(f"the command '{self.command}' is not valid")
+        methods_dict = {
+            "connect_device": self.connect_device,
+            "wifi_connect_device": self.wifi_connect_device,
+            "get_connect_devices": self.get_connect_devices,
+            "disconnect_device": self.disconnect_device,
+        }
+        
+        try:
+            method = methods_dict[self.command]
+            method()
+        except KeyError:
+            raise ValueError(f"the command '{self.command}' is not valid.")
             
     def connect_device(self) -> list:
         """

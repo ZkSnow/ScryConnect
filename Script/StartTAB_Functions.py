@@ -297,7 +297,9 @@ class StartTAB():
             "AoA",
             "uHid",
             "SDK",
-            "mouse binding"
+            "Mouse Binding",
+            "Virtual Display",
+            "Screen Off TO",
         ] 
         
         command_line = ""
@@ -307,7 +309,6 @@ class StartTAB():
         command_line += get_sliders_start(sliders, active_checks, scrcpy_version) 
         command_line += get_line_edit_start(line_edits, active_checks, combo_boxs[0], scrcpy_version)
         command_line += get_combo_box_start(combo_boxs, scrcpy_version)
-        
         args_line, hide_client = get_checkBox_start(active_checks, args_w_required_values, scrcpy_version)
         command_line += args_line
         

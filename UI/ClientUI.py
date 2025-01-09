@@ -105,7 +105,6 @@ class Client(QMainWindow):
         if system() == "Linux":
             self.save_scrcpy_version_if_linux()
         
-        self.setMinimumWidth(TAB_WIDTH)
         self.tabs = QTabWidget()
         
         # Create all the tabs

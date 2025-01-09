@@ -38,14 +38,16 @@ class FindDeviceW_Thread(QThread):
         self.func_args = func_args
             
     def run(self):
-        if self.command == "get_devices_infos":
-            self.get_devices_infos()
-        elif self.command == "disconnect_device":
-            self.disconnect_device()
-        elif self.command == "connect_device":
-            self.connect_device()
-        else:
-            raise ValueError(f"the command '{self.command}' is not valid")
+        methods_dict = {
+            "get_devices_infos": self.get_devices_infos,
+            "connect_device": self.connect_device,
+        }
+        
+        try:
+            method = methods_dict[self.command]
+            method()
+        except KeyError:
+            raise ValueError(f"the command '{self.command}' is not valid.")
             
     def get_devices_infos(self) -> dict:
         """

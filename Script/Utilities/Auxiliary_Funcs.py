@@ -42,14 +42,21 @@ def get_sliders_start(sliders: list, active_checks: list, scrcpy_version: float)
             args_line += f" {bitrate_cmd} {slider.value()}M"
         
         if "video buffer" in active_checks and index == 3:
-            args_line += f" --display-buffer {slider.value()}"
+            video_buffer_cmd = "--video-buffer" if scrcpy_version >= 3.0 else "--display-buffer"
+            args_line += f" {video_buffer_cmd} {slider.value()}"
         
         if "audio buffer" in active_checks and index == 4 and scrcpy_version >= 2.0:
             args_line += f" --audio-buffer {slider.value()}"
-            
-        if "time limit" in active_checks and index == 5 and scrcpy_version >= 2.1:
+        
+        if "angle" in active_checks and index == 5 and scrcpy_version >= 3.0:
+            args_line += f" --angle {slider.value()}"
+        
+        if "time limit" in active_checks and index == 6 and scrcpy_version >= 2.1:
             args_line += f" --time-limit {slider.value()}"
-            
+        
+        if "screen off to" in active_checks and index == 7 and scrcpy_version >= 3.0:
+            args_line += f" --screen-off-timeout {slider.value()}"
+
     return args_line
 
 def get_line_edit_start(line_edits: list, active_checks: list, record_combox: QComboBox, scrcpy_version: float) -> str:
@@ -85,10 +92,18 @@ def get_line_edit_start(line_edits: list, active_checks: list, record_combox: QC
         
         if "mouse binding" in active_checks and index == 1 and scrcpy_version >= 2.5:
             args_line += f" --mouse-bind={lineedit.text()}"
-            
-        if "crop" in active_checks and index == 2:
-            args_line += f" --crop {lineedit.text()}"
 
+        if "virtual display" in active_checks and index in [2, 3, 4] and scrcpy_version >= 3.0:
+            virtual_display_args = {
+                2: f" --new-display={lineedit.text()}",
+                3: f"/{lineedit.text()}" if lineedit.text() else "",
+                4: f" --start-app={lineedit.text()}",
+            }
+            args_line += virtual_display_args[index]
+        
+        if "crop" in active_checks and index == 5:
+            args_line += f" --crop {lineedit.text()}"
+        
     return args_line
 
 def get_combo_box_start(combo_boxs: list, scrcpy_version: float) -> str:
@@ -133,13 +148,14 @@ def get_combo_box_start(combo_boxs: list, scrcpy_version: float) -> str:
         elif dict_name == "deprecated_args":
             for limits in version_dict.keys():
                 if scrcpy_version <= (limit_dict := version_dict[limits])["Version"]:
-                    args_line = "".join(
+                    args_line += "".join(
                         limit_dict.get(combo_text, "") for combo_text in combo_boxs_texts 
                     )
         elif scrcpy_version >= version_dict["Version"]:
             args_line += "".join(
                 version_dict.get(combo_text, "") for combo_text in combo_boxs_texts
             )
+            
     return args_line
 
 def get_checkBox_start(active_checks: list, args_w_required_values: list, scrcpy_version: float) -> tuple:
@@ -415,6 +431,51 @@ def arguments_errors(err_out: list) -> bool:
         create_alert(
             "Mouse",
             "In otg mode, --mouse only supports aoa or disabled",
+        )
+    elif "numberformatexception" in err_out:
+        create_alert(
+            "Unexpected Value",
+            "An unexpected value was received, try changing the arguments",
+        )
+    elif "otg mode: cannot record" in err_out:
+        create_alert(
+            "Record",
+            "Cannot record using otg mode, try changing the arguments",
+        )
+    elif "video and audio disabled, nothing to record" in err_out:
+        create_alert(
+            "Record",
+            "Cannot record with video and audio disabled, try changing the arguments",
+        )
+    elif "--new-display is incompatible with --no-video" in err_out:
+        create_alert(
+            "New Display",
+            "The --new-display option is incompatible with --no-video or --no-playback",
+        )
+    elif "cannot start an android app if control is disabled" in err_out:
+        create_alert(
+            "Control",
+            "Cannot start an android app if control is disabled",
+        )
+    elif "decoder 'video': could not send video packet" in err_out:
+        create_alert(
+            "Video Packet",
+            "Could not send video packet, try changing the arguments (probably an encoding error)",
+        )
+    elif "encoder type for" and "does not match codec type" in err_out:
+        create_alert(
+            "Encoder Type",
+            "Encoder type does not match codec type, try changing the arguments",
+        )
+    elif "unsupported audio codec" in err_out:
+        create_alert(
+            "Unsupported Audio Codec",
+            "This audio codec is not supported, try changing the arguments",
+        )
+    elif "error: demuxer error" in err_out:
+        create_alert(
+            "Demuxer Error",
+            "Demuxer error, try changing the arguments",
         )
     else: 
         error_detect = False

@@ -63,15 +63,19 @@ USERDATA = {
                                None,
                                None,
                                None,
+                               None,
+                               None,
+                               None,
                                ],
-            "Slider_Value": [60, 1000, 8, 0, 0, 0],
-            "Indexs_Combox": [0, 0, 0, 0, 0, 0, 0],
+            "Slider_Value": [60, 1000, 8, 0, 0, 0, 0, 0],
+            "Indexs_Combox": [0, 0, 0, 0, 0, 0, 0, 0, 0],
             "Check_Boxes": [False, False, False,
                             False, False, False, False,
                             False, False, False, False, False,
                             False, False, False, False, False,
                             False, False, False, False, False,
-                            False, False, False, False, False],
+                            False, False, False, False, False,
+                            False, False, False],
                 },
         
         "ConfigTAB": {
@@ -83,14 +87,12 @@ USERDATA = {
 ARGS_LIST = {
     "scrcpy_2.0": {
         "Version": 2.0,
-        "audio buffer": " --audio-buffer ",
         "no audio": " --no-audio",
         "no video": " --no-video",
     },
     
     "scrcpy_2.1": {
         "Version": 2.1,
-        "time limit": " --time-limit ",
         "no playback": " --no-playback",
 
     },
@@ -105,13 +107,16 @@ ARGS_LIST = {
         "gamepad": " -G",
         "gamepad otg": " -G --otg",
     },
+    
+    "scrcpy_3.1": {
+        "Version": 3.1,
+        
+        "no vd destroy": " --no-vd-destroy-content"
+    },
     "all_version": {
-        "record": " -r ",
         "prefer text": " --prefer-text",
         "no k repeat": " --no-key-repeat",
         "raw k events": " --raw-key-events",
-        "fwd all clicks": " --forward-all-clicks",
-        "video buffer": " --display-buffer ",
         "crop": " --crop ",
         "ctrl sct": " --shortcut-mod=lctrl,rctrl",
         "alt-ctrl sct": " --shortcut-mod=lalt,ralt,lctrl,rctrl",
@@ -139,24 +144,39 @@ EXTRA_ARGS_LIST = {
         "Front Camera": " --video-source=camera --camera-facing=front",
         "External Camera": " --video-source=camera --camera-facing=external",
             
-        "Device Sound": "",
         "Microphone": " --audio-source=mic",
     },
     
     "scrcpy_2.3": {
         "Version": 2.3,
         
-        "Initial Orientation": " --lock-video-orientation",
-        "Vertical Orientation": " --lock-video-orientation=0",
-        "Upside Down": " --lock-video-orientation=180",
-        "Horizontal Left": " --lock-video-orientation=270", 
-        "Horizontal Right": " --lock-video-orientation=90",
+        "(flac) C2 Android Flac Encoder": " --audio-codec=flac --audio-encoder=c2.android.flac.encoder",
+        "(flac) OMX Google Flac Encoder": " --audio-codec=flac --audio-encoder=OMX.google.flac.encoder",
     },
     "scrcpy_2.6": {
         "Version": 2.6,
         
         "Playback" : " --audio-source=playback",
         "Audio Dup": " --audio-dup",
+        "Audio Dup + Playback": " --audio-dup --audio-source=playback",
+    },
+    
+    "scrcpy_3.0": {
+        "Version": 3.0,
+        
+        "0° Degrees": " --capture-orientation=@0",
+        "90° Degrees": " --capture-orientation=@90",
+        "180° Degrees": " --capture-orientation=@180",
+        "270° Degrees": " --capture-orientation=@270",
+        "Flip 0° Degrees": " --capture-orientation=@flip0",
+        "Flip 90° Degrees": " --capture-orientation=@flip90",
+        "Flip 180° Degrees": " --capture-orientation=@flip180",
+        "Flip 270° Degrees": " --capture-orientation=@flip270",
+    },
+    "scrcpy_3.1": {
+        "Version": 3.1,
+        
+        "(av1) C2 Android Av1 Encoder" : " --video-encoder=c2.android.av1.encoder --video-codec=av1",
     },
     "all_version": {
         "AoA Mouse": " --otg --mouse=aoa",
@@ -168,17 +188,36 @@ EXTRA_ARGS_LIST = {
         "AoA Mouse + Keyboard": " --otg --mouse=aoa --keyboard=aoa",
         "SDK Mouse + Keyboard": " --mouse=sdk --keyboard=sdk",
         "uHid Mouse + Keyboard": " --mouse=uhid --keyboard=uhid",
+        
+        "(h264) C2 Mtk Avc Encoder" : " --video-encoder=c2.mtk.avc.encoder --video-codec=h264",
+        "(h264) C2 Android Avc Encoder" : " --video-encoder=c2.android.avc.encoder --video-codec=h264",
+        "(h264) OMX Google H264 Encoder" : " --video-encoder=OMX.google.h264.encoder --video-codec=h264",
+        "(h264) OMX MTK VIDEO ENCODER AVC": " --video-encoder=OMX.MTK.VIDEO.ENCODER.AVC --video-codec=h264",
+        "(h265) C2 Mtk Hevc Encoder" : " --video-encoder=c2.mtk.hevc.encoder --video-codec=h265",
+        "(h265) OMX MTK VIDEO ENCODER HEVC" : " --video-encoder=OMX.MTK.VIDEO.ENCODER.HEVC --video-codec=h265",
+        "(opus) C2 Android Opus Encoder": " --audio-codec=opus --audio-encoder=c2.android.opus.encoder",   
+        "(aac) C2 Android Aac Encoder": " --audio-codec=aac --audio-encoder=c2.android.aac.encoder",
+        "(aac) OMX Google Aac Encoder": " --audio-codec=aac --audio-encoder=OMX.google.aac.encoder",
     },
     "deprecated_args": {
         "limit_2.2": {
             "Version": 2.2,
             
-            "Initial Orientation": " --lock-video-orientation",
-            "Vertical Orientation": " --lock-video-orientation=0",
-            "Upside Down": " --lock-video-orientation=2",
-            "Horizontal Left": " --lock-video-orientation=1",
-            "Horizontal Right": " --lock-video-orientation=3",
-        }
+            "0° Degrees": " --lock-video-orientation=0",
+            "90° Degrees": " --lock-video-orientation=1",
+            "180° Degrees": " --lock-video-orientation=2",
+            "270° Degrees": " --lock-video-orientation=3",
+        },
+        "limit_2.7": {
+            "Version": 2.7,
+
+            "fwd all clicks": " --forward-all-clicks",
+            
+            "0° Degrees": " --lock-video-orientation=0",
+            "90° Degrees": " --lock-video-orientation=90",
+            "180° Degrees": " --lock-video-orientation=180",
+            "270° Degrees": " --lock-video-orientation=270", 
+        },
     }
 }
  
@@ -256,24 +295,36 @@ LAYOUT_POSITIONS = {
             (9, 0, 1, 2),
             (10, 0),
             (10, 1),
-            (11, 0),
-            (11, 1),
-            (12, 0),
-            (13, 0, 1, 2),
+            (11, 0, 1, 2),
+            (12, 0, 1, 2),
+            (13, 0),
+            (14, 0, 1, 2),
+            (15, 0),
+            (16, 0, 1, 2),
+            (17, 0),
+            (18, 0, 1, 2),
+            (19, 0, 1, 2),
+            (20, 0, 1, 2),
             (0, 4),
             (1, 4, 1, 2),
             (2, 4),
             (3, 4, 1, 2),
             (4, 4),
+            (4, 5),
             (5, 4, 1, 2),
-            (6, 4),
+            (6, 4, 1, 2),
             (7, 4, 1, 2),
             (8, 4),
             (9, 4, 1, 2),
-            (10, 4, 1, 2),
-            (12, 4),
-            (12, 5),
-            (13, 4, 1, 2),
+            (10, 4),
+            (11, 4, 1, 2),
+            (12, 4, 1, 2),
+            (13, 4),
+            (13, 5),
+            (14, 4, 1, 2),
+            (15, 4),
+            (15, 5),
+            (16, 4, 1, 2),
             ],
                 
         "lower":[
@@ -302,7 +353,11 @@ LAYOUT_POSITIONS = {
             (4, 2),
             (4, 3),
             (4, 4),
-            (5, 0, 1, 5),
+            (5, 0),
+            (5, 1),
+            (5, 2),
+            (5, 3),
+            (6, 0, 1, 5),
             ],
     },
     

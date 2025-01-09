@@ -41,14 +41,17 @@ class StartTAB_Thread(QThread):
         self.func_args = list(func_args)
 
     def run(self):
-        if self.command == "start_scrcpy":
-            self.start_scrcpy()
-        elif self.command == "get_connect_devices":
-            self.get_connect_devices()
-        elif self.command == "open_shell":
-            self.open_shell()
-        else:
-            raise ValueError(f"the command '{self.command}' is not valid")
+        methods_dict = {
+            "start_scrcpy": self.start_scrcpy,
+            "get_connect_devices": self.get_connect_devices,
+            "open_shell": self.open_shell,
+        }
+        
+        try:
+            method = methods_dict[self.command]
+            method()
+        except KeyError:
+            raise ValueError(f"the command '{self.command}' is not valid.")
         
     def start_scrcpy(self) -> str:
         """

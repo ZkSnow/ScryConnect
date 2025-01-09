@@ -35,21 +35,23 @@ class ConfigTAB_Thread(QThread):
     
     def __init__(self, command_name: str, path: str, *func_args: tuple) -> None:
         super().__init__(None)
-        self.command_name = command_name.lower()
+        self.command = command_name.lower()
         self.path = path if running_on_windows == "Windows" else path
         self.func_args = list(func_args)
     
     def run(self):
-        if self.command_name == "charge_device_resolution":
-            self.charge_device_resolution()
-        elif self.command_name == "get_devices":
-            self.get_connect_devices()
-        elif self.command_name == "reset_adb_server":
-            self.reset_adb_server()
-        elif self.command_name == "get_scrcpy_version_and_save":
-            self.get_scrcpy_version_and_save()
-        else:
-            raise ValueError(f"the command '{self.command_name}' is not valid")
+        methods_dict = {
+            "get_connect_devices": self.get_connect_devices,
+            "charge_device_resolution": self.charge_device_resolution,
+            "reset_adb_server": self.reset_adb_server,
+            "get_scrcpy_version_and_save": self.get_scrcpy_version_and_save
+        }
+        
+        try:
+            method = methods_dict[self.command]
+            method()
+        except KeyError:
+            raise ValueError(f"the command '{self.command}' is not valid.")
 
     def get_connect_devices(self) -> list:
         """

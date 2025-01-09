@@ -193,7 +193,7 @@ class ConfigTAB():
             if verify_scrcpy_path(path):
                 if resolution != "":
                     self.terminal = ConfigTAB_Thread(
-                        "get_devices",
+                        "get_connect_devices",
                         path,
                         DeviceSelectionUI,
                         resolution,

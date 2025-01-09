@@ -67,11 +67,14 @@ class StartTab(QScrollArea):
         
         orientations = [
             "OFF",
-            "Initial Orientation",
-            "Vertical Orientation",
-            "Upside Down",
-            "Horizontal Left",
-            "Horizontal Right",
+            "0° Degrees",
+            "90° Degrees",
+            "180° Degrees",
+            "270° Degrees",
+            "Flip 0° Degrees",
+            "Flip 90° Degrees",
+            "Flip 180° Degrees",
+            "Flip 270° Degrees",
         ]
         otg_type = [
             "OFF",
@@ -90,6 +93,30 @@ class StartTab(QScrollArea):
             "aac",
             "opus",
         ]
+        codec_list = [
+            "Default",
+            "H264",
+            "H265",
+            "AV1",
+            "Opus",
+            "AAC",
+            "Flac"
+        ]
+        encoder_list = [
+            "Default",
+            "(h264) C2 Mtk Avc Encoder",
+            "(h264) C2 Android Avc Encoder",
+            "(h264) OMX Google H264 Encoder",
+            "(h264) OMX MTK VIDEO ENCODER AVC",
+            "(h265) C2 Mtk Hevc Encoder",
+            "(h265) OMX MTK VIDEO ENCODER HEVC",
+            "(av1) C2 Android Av1 Encoder",
+            "(opus) C2 Android Opus Encoder",
+            "(aac) C2 Android Aac Encoder",
+            "(aac) OMX Google Aac Encoder",
+            "(flac) C2 Android Flac Encoder",
+            "(flac) OMX Google Flac Encoder",
+        ]
         video_sources = [
             "Screen",
             "Back Camera",
@@ -101,6 +128,7 @@ class StartTab(QScrollArea):
             "Microphone",
             "Playback",
             "Audio Dup",
+            "Audio Dup + Playback",
         ]
 
         self.label_save_config = Create.Label("Save Config")
@@ -111,40 +139,52 @@ class StartTab(QScrollArea):
         self.label_video_buffer = Create.Label("Video-Buffer")
         self.label_audio_buffer = Create.Label("Audio-Buffer")
         self.label_record = Create.Label("Record File")
+        self.label_codec_encoder = Create.Label("Codec & Encoder")
         self.label_crop_config = Create.Label("Crop Config")
         self.label_lock_orientation = Create.Label("Lock Orientation")
+        self.label_angle_label = Create.Label("Screen Angle°")
         self.label_video_source = Create.Label("Video Source")
         self.label_audio_source = Create.Label("Audio Source")
         self.label_time_limit = Create.Label("Record Time Limit")
         self.label_keyboard_mouse = Create.Label("Keyboard & Mouse")
         self.label_mouse_binding = Create.Label("Mouse Binding")
+        self.label_screen_off_timeout = Create.Label("Screen Off Timeout")
+        self.label_virtual_display = Create.Label("Virtual Display")
 
         self.combox_presets = Create.Combox(config_templates, (145, 22), index_combo[0])
         self.combox_record_file_type = Create.Combox(file_types, (51, 22), index_combo[1])
-        self.combox_orientation_config = Create.Combox(orientations, (191, 22), index_combo[2])
-        self.combox_video_source = Create.Combox(video_sources, (191, 22), index_combo[3])
-        self.combox_audio_source = Create.Combox(audio_sources, (191, 22), index_combo[4])
-        self.combox_OTG_type = Create.Combox(otg_type, (191, 22), index_combo[5])
-        self.combox_OTG_mode = Create.Combox(otg_mode, (191, 22), index_combo[6])
+        self.combox_codec_encoders = Create.Combox(encoder_list, (191, 22), index_combo[2])
+        self.combox_orientation_config = Create.Combox(orientations, (191, 22), index_combo[3])
+        self.combox_video_source = Create.Combox(video_sources, (191, 22), index_combo[4])
+        self.combox_audio_source = Create.Combox(audio_sources, (191, 22), index_combo[5])
+        self.combox_OTG_type = Create.Combox(otg_type, (191, 22), index_combo[6])
+        self.combox_OTG_mode = Create.Combox(otg_mode, (191, 22), index_combo[7])
 
         self.text_custom_start = Create.LineEdit("Custom Config... *JUST ARGS*", (301, 20), last_texts[0])
         self.text_record_file_name = Create.LineEdit("File Name...", (111, 20), last_texts[1], r"\S+")
         self.text_mouse_binding = Create.LineEdit("xxxx (--mouse-bind=xxxx)", (192, 20), last_texts[2], "^[+\-bhsn:]+$")
-        self.text_crop_config = Create.LineEdit("width:height:x:y", (192, 20), last_texts[3], "^[0-9:]*$")
+        self.text_virtual_display_res = Create.LineEdit("1920x1080", (192, 20), last_texts[3], "^[0-9xX]*$")
+        self.text_virtual_display_dpi = Create.LineEdit("DPI", (192, 20), last_texts[4], "^[0-9]*$")
+        self.text_app_start = Create.LineEdit("App Package e.g org.videolan.vlc or ?firefox", (192, 20), last_texts[5])
+        self.text_crop_config = Create.LineEdit("width:height:x:y", (192, 20), last_texts[6], "^[0-9:]*$")
 
         self.line_FPS = Create.LineEdit("FPS", (80, 20), slider_values[0], "[0-9]*$", "ValuesLines")
         self.line_max_size = Create.LineEdit("MAX-SIZE", (80, 20), slider_values[1], "[0-9]*$", "ValuesLines")
         self.line_video_bit = Create.LineEdit("VIDEO-BIT", (80, 20), slider_values[2], "[0-9]*$", "ValuesLines")
         self.line_video_buffer = Create.LineEdit("VIDEO-BUFFER", (80, 20), slider_values[3], "[0-9]*$", "ValuesLines")
         self.line_audio_buffer = Create.LineEdit("AUDIO-BUFFER", (80, 20), slider_values[4], "[0-9]*$", "ValuesLines")
-        self.line_time_limit = Create.LineEdit("TIME-LIMIT (s)", (80, 20), slider_values[5], "[0-9]*$", "ValuesLines")
-
+        self.line_angle = Create.LineEdit("ANGLE°", (80, 20), slider_values[5], "[0-9]*$", "ValuesLines")
+        self.line_time_limit = Create.LineEdit("TIME-LIMIT (s)", (80, 20), slider_values[6], "[0-9]*$", "ValuesLines")
+        self.line_screen_off_timeout = Create.LineEdit("SCREEN-OFF-TIMEOUT", (80, 20), slider_values[7], "[0-9]*$", "ValuesLines")
+        
         self.slider_FPS = Create.Slider(5, 65535, 5, slider_values[0], (151, 21))
         self.slider_max_size = Create.Slider(500, 65535, 100, slider_values[1], (151, 21))
         self.slider_video_bit = Create.Slider(1, 2147, 5, slider_values[2], (151, 21))
         self.slider_video_buffer = Create.Slider(0, 10000, 10, slider_values[3], (151, 21))
         self.slider_audio_buffer = Create.Slider(0, 10000, 10, slider_values[4], (151, 21))
-        self.slider_time_limit = Create.Slider(0, 1000, 30, slider_values[5], (151, 21))
+        self.slider_angle = Create.Slider(-360, 360, 5, slider_values[5], (151, 21))
+        self.slider_time_limit = Create.Slider(0, 1000, 30, slider_values[6], (151, 21))
+        self.slider_screen_off_timeout = Create.Slider(0, 1000, 30, slider_values[7], (151, 21))
 
         self.button_load = Create.Button("Load", (145, 23))
         self.button_start_custom = Create.Button("Start Custom", (301, 23))
@@ -182,6 +222,10 @@ class StartTab(QScrollArea):
         self.check_mouse_binding = Create.CheckBox("Mouse Binding", (71, 18), last_checks[23])
         self.check_gamepad = Create.CheckBox("Gamepad", (71, 18), last_checks[24])
         self.check_gamepad_otg = Create.CheckBox("Gamepad OTG", (71, 18), last_checks[25])
+        self.check_virtual_display = Create.CheckBox("Virtual Display", (71, 18), last_checks[26])
+        self.check_screen_off_timeout = Create.CheckBox("Screen Off TO", (71, 18), last_checks[27])
+        self.check_angle = Create.CheckBox("Angle", (71, 18), last_checks[28])
+        self.no_video_destroy_content = Create.CheckBox("No Vd Destroy", (71, 18), last_checks[29])
 
     def assemble_elements(self):
         """
@@ -225,16 +269,25 @@ class StartTab(QScrollArea):
             self.line_audio_buffer,
             self.label_audio_buffer,
             self.slider_audio_buffer,
-            self.check_record,
             self.label_record,
+            self.check_record,
             self.text_record_file_name,
             self.combox_record_file_type,
+            self.label_codec_encoder,
+            self.combox_codec_encoders,
             self.label_mouse_binding,
             self.text_mouse_binding,
+            self.label_virtual_display,
+            self.text_virtual_display_res,
+            self.text_virtual_display_dpi,
+            self.text_app_start,
             self.label_crop_config,
             self.text_crop_config,
             self.label_lock_orientation,
             self.combox_orientation_config,
+            self.label_angle_label,
+            self.line_angle,
+            self.slider_angle,
             self.label_video_source,
             self.combox_video_source,
             self.label_audio_source,
@@ -245,6 +298,9 @@ class StartTab(QScrollArea):
             self.label_time_limit,
             self.line_time_limit,
             self.slider_time_limit,
+            self.label_screen_off_timeout,
+            self.line_screen_off_timeout,
+            self.slider_screen_off_timeout,          
         )
         lower_layout = assemble_grid_layout(
             "start_tab",
@@ -274,6 +330,10 @@ class StartTab(QScrollArea):
             self.check_mouse_binding,
             self.check_gamepad,
             self.check_gamepad_otg,
+            self.check_virtual_display,
+            self.check_screen_off_timeout,
+            self.check_angle,
+            self.no_video_destroy_content,
             self.button_start,
         )
         
@@ -327,7 +387,9 @@ class StartTab(QScrollArea):
             self.line_video_bit,
             self.line_video_buffer,
             self.line_audio_buffer,
+            self.line_angle,
             self.line_time_limit,
+            self.line_screen_off_timeout,
         ]
         sliders = self.findChildren(QSlider) 
         check_boxs = self.findChildren(QCheckBox) 
